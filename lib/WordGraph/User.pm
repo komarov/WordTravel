@@ -1,8 +1,7 @@
 use MooseX::Declare;
 use WordGraph::Types;
 
-class WordGraph::User {
-   has Uid     => ( is => 'ro', isa => 'GUID', coerce => 1, required => 1 );
+class WordGraph::User extends WordGraph::Object {
    has Guessed => ( is => 'ro', isa => 'ArrayRef[WordGraph::Word]', builder => '_buildGuessed' ); 
    
 
