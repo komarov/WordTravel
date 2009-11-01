@@ -13,4 +13,21 @@ role WordGraph::Uid {
    method _buildUid {
       return Data::GUID->new();
    }
+
+
+   #-------------------------------------------------------------------------------
+   method getUid {
+      return $self->Uid;
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method isEqual( WordGraph::Uid $Object ) {
+      if( ( $self->getUid() <=> $Object->getUid() ) == 0 ) {
+         return 1;
+      }
+      else {
+         return 0;
+      }
+   }
 }
