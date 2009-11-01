@@ -1,14 +1,37 @@
 use MooseX::Declare;
-use MooseX::Types;
-use Data::GUID;
 
 
-class WordGraph::Object {
-   has Uid  => ( is => 'ro', isa => 'Data::GUID', coerce => 1, lazy => 1, builder => '_buildUid' );
+class WordGraph::Object with WordGraph::Uid {
+   use JSON;
+   use IO::All -utf8;
+
+
+   has RawData => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 
 
    #-------------------------------------------------------------------------------
-   method _buildUid {
-      return Data::GUID->new();
+   method _getStorage {
+      return 'data/' . $self->Uid;
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method _load {
+      my $RawDataJson = io( $self->_getStorage() )->all;
+      $self->RawData( from_json( $RawDataJson ) );
+      return 1;
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method _save {
+      to_json( $self->RawData ) > io( $self->_getStorage() );
+      return 1;
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method _delete {
+      return unlink( $self->_getStorage() );
    }
 }

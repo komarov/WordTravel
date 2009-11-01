@@ -1,8 +1,7 @@
 use MooseX::Declare;
-use WordGraph::Types;
 
 
-class WordGraph::Word extends WordGraph::Object {
+class WordGraph::Word with WordGraph::Uid {
    has Word => ( is => 'ro', isa => 'Str' );
 
 
