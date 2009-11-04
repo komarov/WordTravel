@@ -6,7 +6,7 @@ class WordGraph::Word with WordGraph::Uid {
 
 
    #------------------------------------------------------------------------------- 
-   method verify( Str $Word ) {
+   method verify( Maybe[Str] $Word! ) {
       return lc( $self->Word ) eq lc( $Word );
    }
 

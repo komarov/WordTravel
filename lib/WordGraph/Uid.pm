@@ -23,7 +23,13 @@ role WordGraph::Uid {
 
    #-------------------------------------------------------------------------------
    method isEqual( WordGraph::Uid $Object ) {
-      if( ( $self->getUid() <=> $Object->getUid() ) == 0 ) {
+      return $self->hasUid( $Object->getUid() );
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method hasUid( Data::GUID $Uid ) {
+      if( ( $self->getUid() <=> $Uid ) == 0 ) {
          return 1;
       }
       else {

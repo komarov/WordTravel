@@ -6,26 +6,40 @@ class WordGraph::Object with WordGraph::Uid {
    use IO::All -utf8;
 
 
-   has RawData => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
-
-
    #-------------------------------------------------------------------------------
    method _getStorage {
-      return 'data/' . $self->Uid;
+      return 'data/' . blessed( $self ) . $self->getUid();
    }
 
 
    #-------------------------------------------------------------------------------
-   method _load {
-      my $RawDataJson = io( $self->_getStorage() )->all;
-      $self->RawData( from_json( $RawDataJson ) );
+   method _composeRawData {
+      return {};
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method _decomposeRawData( HashRef $RawData! ) {
       return 1;
    }
 
 
    #-------------------------------------------------------------------------------
+   method _load {
+      if( -e $self->_getStorage() ) {
+         my $RawDataJson = io( $self->_getStorage() )->all;
+         $self->_decomposeRawData( from_json( $RawDataJson ) );
+         return 1;
+      }
+      else {
+         return;
+      }
+   }
+
+
+   #-------------------------------------------------------------------------------
    method _save {
-      to_json( $self->RawData ) > io( $self->_getStorage() );
+      to_json( $self->_composeRawData() ) > io( $self->_getStorage() );
       return 1;
    }
 
