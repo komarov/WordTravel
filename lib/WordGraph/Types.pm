@@ -7,4 +7,5 @@ class_type( 'WordGraph::Object' ) unless find_type_constraint( 'WordGraph::Objec
 class_type( 'WordGraph::Word' ) unless find_type_constraint( 'WordGraph::Word' );
 class_type( 'WordGraph::User' ) unless find_type_constraint( 'WordGraph::User' );
 
+subtype 'Pair' => as 'ArrayRef' => where { @$_ == 2  };
 1;

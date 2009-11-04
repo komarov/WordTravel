@@ -27,7 +27,7 @@ class WordGraph::User extends WordGraph::Object {
 
    #-------------------------------------------------------------------------------
    method _storeGuessedWord( WordGraph::Word $Word! ) {
-      if( none { $Word->hasUid( $_ ) } @{ $self->GuessedWordUids } or !scalar @{ $self->GuessedWordUids } ) {
+      if( none { $Word->getUid() == $_ } @{ $self->GuessedWordUids } or !scalar @{ $self->GuessedWordUids } ) {
          push @{ $self->GuessedWordUids }, $Word->getUid();
          $self->_save();
          return 1;
@@ -47,6 +47,6 @@ class WordGraph::User extends WordGraph::Object {
 
    #-------------------------------------------------------------------------------
    method hasGuessed( WordGraph::Word $Word! ) {
-      return any { $Word->hasUid( $_ ) } @{ $self->GuessedWordUids };
+      return any { $Word->getUid() == $_ } @{ $self->GuessedWordUids };
    }
 }
