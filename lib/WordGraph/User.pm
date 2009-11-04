@@ -6,7 +6,7 @@ class WordGraph::User extends WordGraph::Object {
    use Data::GUID;
 
 
-   has GuessedWords => ( is => 'rw', isa => 'ArrayRef[Data::GUID]', default => sub{ [] } ); 
+   has GuessedWordUids => ( is => 'rw', isa => 'ArrayRef[Data::GUID]', default => sub{ [] } ); 
    
 
    #-------------------------------------------------------------------------------
@@ -17,14 +17,14 @@ class WordGraph::User extends WordGraph::Object {
 
    #-------------------------------------------------------------------------------
    method _composeRawData {
-      return { GuessedWords => [ map { $_->as_string() } @{ $self->GuessedWords } ] };
+      return { GuessedWordUids => [ map { $_->as_string() } @{ $self->GuessedWordUids } ] };
    }
 
 
    #-------------------------------------------------------------------------------
    method _decomposeRawData( HashRef $RawData! ) {
-      if( my $GuessedWords = $RawData->{GuessedWords} ) {
-         $self->GuessedWords( [ map { Data::GUID->from_string( $_ ) } @$GuessedWords ] );
+      if( my $GuessedWordUids = $RawData->{GuessedWordUids} ) {
+         $self->GuessedWordUids( [ map { Data::GUID->from_string( $_ ) } @$GuessedWordUids ] );
          return 1;
       }
       return;
@@ -33,8 +33,8 @@ class WordGraph::User extends WordGraph::Object {
 
    #-------------------------------------------------------------------------------
    method _storeGuessedWord( WordGraph::Word $Word! ) {
-      if( none { $Word->hasUid( $_ ) } @{ $self->GuessedWords } or !scalar @{ $self->GuessedWords } ) {
-         push @{ $self->GuessedWords }, $Word->getUid();
+      if( none { $Word->hasUid( $_ ) } @{ $self->GuessedWordUids } or !scalar @{ $self->GuessedWordUids } ) {
+         push @{ $self->GuessedWordUids }, $Word->getUid();
          $self->_save();
          return 1;
       }
@@ -53,6 +53,6 @@ class WordGraph::User extends WordGraph::Object {
 
    #-------------------------------------------------------------------------------
    method hasGuessed( WordGraph::Word $Word! ) {
-      return any { $Word->hasUid( $_ ) } @{ $self->GuessedWords };
+      return any { $Word->hasUid( $_ ) } @{ $self->GuessedWordUids };
    }
 }
