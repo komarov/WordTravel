@@ -10,12 +10,6 @@ class WordGraph::User extends WordGraph::Object {
    
 
    #-------------------------------------------------------------------------------
-   method BUILD {
-      $self->_load();
-   }
-
-
-   #-------------------------------------------------------------------------------
    method _composeRawData {
       return { GuessedWordUids => [ map { $_->as_string() } @{ $self->GuessedWordUids } ] };
    }

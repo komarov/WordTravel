@@ -7,6 +7,12 @@ class WordGraph::Object with WordGraph::Uid {
 
 
    #-------------------------------------------------------------------------------
+   method BUILD {
+      $self->_load();
+   }
+
+
+   #-------------------------------------------------------------------------------
    method _getStorage {
       return 'data/' . blessed( $self ) . $self->getUid();
    }
