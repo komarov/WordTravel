@@ -2,7 +2,7 @@ use MooseX::Declare;
 
 
 class WordGraph::Word with WordGraph::Uid {
-   has Word => ( is => 'ro', isa => 'Str' );
+   has Word => ( is => 'ro', isa => 'Str', required => 1 );
 
 
    #-------------------------------------------------------------------------------
