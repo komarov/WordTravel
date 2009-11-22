@@ -4,7 +4,7 @@ use Test::More qw( no_plan );
 
 use lib 'lib';
 use WordGraph::Types;
-use_ok( 'WordGraph::Frame' );
+use WordGraph::Frame;
 use WordGraph::Word;
 
 my $Word1 = WordGraph::Word->new( Word => '123' );
@@ -18,7 +18,7 @@ ok(
 $Frame->_save();
 
 my $SameFrame = WordGraph::Frame->new( Uid => $Frame->getUid() );
-my ( $Linked ) = $SameFrame->getLinkedWords( $Word1->getUid() );
+my ( $Linked ) = $SameFrame->getLinkedWords( $Word1 );
 ok(
    $Linked->isEqual( $Word2 ),
    'getLinkedWords works'
@@ -31,10 +31,10 @@ ok(
    'word was added successfully'
 );
 ok(
-   $Frame->linkWords( [ $Word1->getUid(), $Word3->getUid() ] ),
+   $Frame->linkWords( $Word1, $Word3 ),
    'words were linked successfully'
 );
-my @Linked = $Frame->getLinkedWords( $Word1->getUid() );
+my @Linked = $Frame->getLinkedWords( $Word1 );
 ok(
    scalar @Linked == 2,
    'both linked words were found'

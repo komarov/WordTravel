@@ -31,37 +31,49 @@ class WordGraph::Frame extends WordGraph::Object {
 
 
    #-------------------------------------------------------------------------------
-   method getWordByUid( Data::GUID $WordUid ) {
+   method getWordByUid( Data::GUID $WordUid! ) {
       return first { $_->getUid() == $WordUid } @{ $self->Words };
    }
 
 
    #-------------------------------------------------------------------------------
-   method getLinkedWords( Data::GUID $WordUid ) {
+   method getWords {
+      return @{ $self->Words };
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method getLinks {
+      return @{ $self->Links };
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method getLinkedWords( WordGraph::Word $Word! ) {
+      my $WordUid = $Word->getUid();
       my @LinkedWords = ();
       foreach my $Link ( @{ $self->Links } ) {
-         my $Index;
          if( $Link->[ 0 ] == $WordUid ) {
-            $Index = 1;
+            push @LinkedWords, $self->getWordByUid( $Link->[ 1 ] );
          }
          elsif( $Link->[ 1 ] == $WordUid ) {
-            $Index = 0;
+            push @LinkedWords, $self->getWordByUid( $Link->[ 0 ] );
          }
-         push @LinkedWords, $self->getWordByUid( $Link->[ $Index ] );
       }
       return @LinkedWords;
    }
 
 
    #-------------------------------------------------------------------------------
-   method addWord( WordGraph::Word $Word ) {
+   method addWord( WordGraph::Word $Word! ) {
       push @{ $self->Words }, $Word;
       return $self->_save();
    }
 
 
    #-------------------------------------------------------------------------------
-   method linkWords( Pair[Data::GUID] $UidsPair ) {
+   method linkWords( WordGraph::Word $WordA!, WordGraph::Word $WordB! ) {
+      my $UidsPair = [ map { $_->getUid() } ( $WordA, $WordB )];
       push @{ $self->Links }, $UidsPair;
       return $self->_save();
    }

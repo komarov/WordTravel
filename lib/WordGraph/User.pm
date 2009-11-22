@@ -49,4 +49,27 @@ class WordGraph::User extends WordGraph::Object {
    method hasGuessed( WordGraph::Word $Word! ) {
       return any { $Word->getUid() == $_ } @{ $self->GuessedWordUids };
    }
+
+
+   #-------------------------------------------------------------------------------
+   method renderFrame( WordGraph::Frame $Frame! ) {
+      my %VisibleWords = ();
+      foreach my $Word ( $Frame->getWords() ) {
+         if( !exists $VisibleWords{ $Word->getUid() } ) {
+            if( $self->hasGuessed( $Word ) ) {
+               $VisibleWords{ $Word->getUid() } = $Word->getWord();
+               foreach my $LinkedWord ( $Frame->getLinkedWords( $Word ) ) {
+                  $VisibleWords{ $LinkedWord->getUid() } = $self->hasGuessed( $LinkedWord ) ? $LinkedWord->getWord() : $LinkedWord->getMask();
+               }
+            }
+         }
+      }
+      my @VisibleLinks = map { [ $_->[ 0 ]->as_string(), $_->[ 1 ]->as_string() ] } 
+                         grep { exists $VisibleWords{ $_->[ 0 ] } || exists $VisibleWords{ $_->[ 1 ] } } 
+                         $Frame->getLinks();
+      return {
+         Words => \%VisibleWords,
+         Links => \@VisibleLinks,
+      };
+   }
 }

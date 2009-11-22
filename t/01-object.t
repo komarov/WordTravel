@@ -5,7 +5,7 @@ use Test::More qw( no_plan );
 use MooseX::Declare;
 
 use lib 'lib';
-use_ok( 'WordGraph::Object' );
+use WordGraph::Object;
 
 my $Class = class extends WordGraph::Object {
    has RawData => ( is => 'rw', isa => 'HashRef', default => sub { {} } );

@@ -4,7 +4,7 @@ use utf8;
 use Test::More qw( no_plan );
 
 use lib 'lib';
-use_ok( 'WordGraph::Word' );
+use WordGraph::Word;
 
 my $Word = WordGraph::Word->new( Word => 'abc 123' );
 ok(

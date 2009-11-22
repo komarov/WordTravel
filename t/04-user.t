@@ -4,8 +4,9 @@ use Test::More qw( no_plan );
 
 use lib 'lib';
 use WordGraph::Types;
-use_ok( 'WordGraph::User' );
+use WordGraph::User;
 use WordGraph::Word;
+use WordGraph::Frame;
 
 my $User = WordGraph::User->new();
 ok(
@@ -47,4 +48,16 @@ ok(
    $User->guessWord( Word => $NewWord, Guess => 'real' ) && $User->hasGuessed( $NewWord ),
    'correct guess leads to storing of guessed word'
 );
+
+my $SecretWord = WordGraph::Word->new( Word => 'secret' );
+my @Words = ( $Word, $AnotherWord, $NewWord, $SecretWord );
+my $Frame = WordGraph::Frame->new( Words => \@Words );
+$Frame->linkWords( $Word, $AnotherWord );
+$Frame->linkWords( $AnotherWord, $NewWord );
+$Frame->linkWords( $NewWord, $SecretWord );
+
+use Data::Dumper;
+print Dumper $User->renderFrame( $Frame );
+
 $User->_delete();
+$Frame->_delete();
