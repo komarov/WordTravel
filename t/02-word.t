@@ -8,10 +8,6 @@ use WordGraph::Word;
 
 my $Word = WordGraph::Word->new( Word => 'abc 123' );
 ok(
-   $Word->getWord() eq 'abc 123',
-   'getWord works'
-);
-ok(
    $Word->getMask() eq '... ...',
    'getMask works'
 );

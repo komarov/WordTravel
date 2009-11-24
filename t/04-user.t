@@ -15,25 +15,21 @@ ok(
 );
 
 my $Word = WordGraph::Word->new( Word => 'abc' );
-ok( 
-   $User->_storeGuessedWord( $Word ),
-   'guessed word stored successfully'
-);
-ok(
-   $User->hasGuessed( $Word ),
-   'stored guessed word now is really considered guessed'
-);
 my $AnotherWord = WordGraph::Word->new( Word => '123' );
 ok(
-   !$User->hasGuessed( $AnotherWord ),
-   'unknown words are not considered guessed'
+   $User->guessWord( Word => $Word, Guess => 'aBc' ) && $User->getGuess( $Word ) eq 'aBc',
+   'guessed and stored exact guess'
 );
-ok( 
-   $User->_storeGuessedWord( $AnotherWord ),
-   'another guessed word stored successfully'
+ok(
+   $User->guessWord( Word => $AnotherWord, Guess => '123' ),
+   'guessed'
 );
 
 my $SameUser = WordGraph::User->new( Uid => $User->getUid() );
+ok(
+   $SameUser->isEqual( $User ),
+   'created same user'
+);
 ok(
    $SameUser->hasGuessed( $Word ) && $SameUser->hasGuessed( $AnotherWord ),
    'all instances of the same user consider this word as guessed'

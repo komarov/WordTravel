@@ -12,7 +12,7 @@ class WordGraph::Frame extends WordGraph::Object {
    #-------------------------------------------------------------------------------
    method _composeRawData {
       return { 
-         Words => [ map { { Uid => $_->getUid()->as_string(), Word => $_->getWord() } } @{ $self->Words } ],
+         Words => [ map { { Uid => $_->getUid()->as_string(), Mask => $_->getMask(), Hash => $_->getHash() } } @{ $self->Words } ],
          Links => [ map { [ $_->[ 0 ]->as_string(), $_->[ 1 ]->as_string() ] } @{ $self->Links } ]
       };
    }
@@ -21,7 +21,7 @@ class WordGraph::Frame extends WordGraph::Object {
    #-------------------------------------------------------------------------------
    method _decomposeRawData( HashRef $RawData! ) {
       if( my $Words = $RawData->{Words} ) {
-         $self->Words( [ map { WordGraph::Word->new( Uid => $_->{Uid}, Word => $_->{Word} ) } @$Words ] );
+         $self->Words( [ map { WordGraph::Word->new( Uid => $_->{Uid}, Hash => $_->{Hash}, Mask => $_->{Mask} ) } @$Words ] );
       }
       if( my $Links = $RawData->{Links} ) {
          $self->Links( [ map { [ Data::GUID->from_string( $_->[ 0 ] ), Data::GUID->from_string( $_->[ 1 ] ) ] } @$Links ] );
