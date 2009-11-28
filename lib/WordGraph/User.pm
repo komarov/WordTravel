@@ -39,7 +39,7 @@ class WordGraph::User extends WordGraph::Object {
 
    #-------------------------------------------------------------------------------
    method guessWord( WordGraph::Word :$Word!, Str :$Guess! ) {
-      if( $Word->verify( $Guess ) ) {
+      if( !$self->hasGuessed( $Word ) && $Word->verify( $Guess ) ) {
          return $self->_storeGuessedWord( Word => $Word, Guess => $Guess );
       }
       return;
@@ -81,5 +81,11 @@ class WordGraph::User extends WordGraph::Object {
          Words => \%VisibleWords,
          Links => \@VisibleLinks,
       };
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method guessWordInFrame( WordGraph::Frame :$Frame!, Str :$Guess! ) {
+      return any { $self->guessWord( Word => $_, Guess => $Guess ) } $Frame->getWords();
    }
 }

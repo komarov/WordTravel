@@ -44,6 +44,10 @@ ok(
    $User->guessWord( Word => $NewWord, Guess => 'real' ) && $User->hasGuessed( $NewWord ),
    'correct guess leads to storing of guessed word'
 );
+ok(
+   !$User->guessWord( Word => $NewWord, Guess => 'real' ),
+   'second guess has no effect'
+);
 
 my $SecretWord = WordGraph::Word->new( Word => 'secret' );
 my @Words = ( $Word, $AnotherWord, $NewWord, $SecretWord );
@@ -51,6 +55,15 @@ my $Frame = WordGraph::Frame->new( Words => \@Words );
 $Frame->linkWords( $Word, $AnotherWord );
 $Frame->linkWords( $AnotherWord, $NewWord );
 $Frame->linkWords( $NewWord, $SecretWord );
+
+ok(
+   $User->guessWordInFrame( Frame => $Frame, Guess => 'secret' ),
+   'guessed word in frame'
+);
+ok(
+   !$User->guessWordInFrame( Frame => $Frame, Guess => 'secret' ),
+   'second guess has no effect'
+);
 
 use Data::Dumper;
 print Dumper $User->renderFrame( $Frame );
