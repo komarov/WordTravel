@@ -50,11 +50,13 @@ ok(
 );
 
 my $SecretWord = WordGraph::Word->new( Word => 'secret' );
-my @Words = ( $Word, $AnotherWord, $NewWord, $SecretWord );
+my $SecretWord2 = WordGraph::Word->new( Word => 'secret1' );
+my @Words = ( $Word, $AnotherWord, $NewWord, $SecretWord, $SecretWord2 );
 my $Frame = WordGraph::Frame->new( Words => \@Words );
 $Frame->linkWords( $Word, $AnotherWord );
 $Frame->linkWords( $AnotherWord, $NewWord );
 $Frame->linkWords( $NewWord, $SecretWord );
+$Frame->linkWords( $NewWord, $SecretWord2 );
 
 ok(
    $User->guessWordInFrame( Frame => $Frame, Guess => 'secret' ),
