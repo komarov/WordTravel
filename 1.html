@@ -1,0 +1,142 @@
+<html>
+<body>
+<script type="text/javascript" src="raphael-min.js"></script>
+
+<script type="text/javascript">
+
+Raphael.el.getHotSpot = function() {
+   var bbox = this.getBBox();
+   return { 
+      x: bbox.x + bbox.width / 2, 
+      y: bbox.y + bbox.height / 2
+   };
+};
+
+function getFrame() {
+
+   var frame = {
+      'Links': [
+         [
+            '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0',
+            '8EC99946-E7EB-11DE-B3BD-C724A05985A0'
+         ],
+         [
+            '8EC99946-E7EB-11DE-B3BD-C724A05985A0',
+            '8ED02950-E7EB-11DE-B3BD-C724A05985A0'
+         ],
+         [
+            '8ED02950-E7EB-11DE-B3BD-C724A05985A0',
+            '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0'
+         ],
+         [
+            '8ED02950-E7EB-11DE-B3BD-C724A05985A0',
+            '8EDA547A-E7EB-11DE-B3BD-C724A05985A0'
+         ]
+      ],
+      'Words': {
+         '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0': 'aBc',
+         '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': 'secret',
+         '8ED02950-E7EB-11DE-B3BD-C724A05985A0': 'real',
+         '8EC99946-E7EB-11DE-B3BD-C724A05985A0': '123',
+         '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': '.......'
+      }
+   };
+
+   return frame;
+}
+
+function drawWord( paper, word, width, height, x, y, round ) {
+
+
+   var text = paper.text( x, y, word ).attr( { fill: "#fff" } );
+   console.log( rect.node.getBBox() );
+  
+   text.getBBox(). 
+   var rect = paper.rect( x, y, width, height, round ).attr( {fill: "#223fa3" } );
+   return rect;
+}
+
+function isFree( places, x, y ) {
+
+   var R = 50;
+   for( var place in places ) {
+      if( places.hasOwnProperty( place ) ) {
+         occupied = places[ place ].getBBox(); 
+         if( ( x <= occupied.x + R && x >= occupied.x - R ) || ( y <= occupied.y + R && y >= occupied.y - R ) ) {
+            return false;
+         }
+      }
+   }
+   
+   return true;
+
+}
+
+function drawFrame( paper, frame ) {
+
+   var placedWords = {};
+   console.log( paper );
+   for( var wordUID in frame.Words ) {
+      if( frame.Words.hasOwnProperty( wordUID ) ) {
+         x = Math.random() * paper.width;
+         y = Math.random() * paper.height;
+
+         while( !isFree( placedWords, x, y )  ) {
+            x = Math.random() * paper.width;
+            y = Math.random() * paper.height;      
+         }
+
+         placedWords[ wordUID ] = drawWord( paper, frame.Words[ wordUID ], 60, 20, x, y, 3 );
+         console.log( placedWords );
+         console.log( placedWords[ wordUID ] );
+      }
+   }
+
+   for( var index in frame.Links ) {
+      if( frame.Links.hasOwnProperty( index ) ) {
+         var link = frame.Links[ index ];
+         var hotSpot_0 =  placedWords[ link[ 0 ] ].getHotSpot();
+         var hotSpot_1 =  placedWords[ link[ 1 ] ].getHotSpot();
+
+         var path = "M" + hotSpot_0.x + " " + hotSpot_0.y + "L" + hotSpot_1.x + " " + hotSpot_1.y;
+         paper.path( path ).toBack();
+
+      }
+
+
+   }
+}
+
+
+window.onload = function() { 
+
+   var newFrame = getFrame();
+   //alert( newFrame[ 'Words' ][ '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0' ] );
+
+   var paperWidth = 600;
+   var paperHeight = 400;
+   var centerX =  window.innerWidth / 2;
+   var centerY =  window.innerHeight / 2;
+   var startX = centerX - paperWidth / 2;
+   var startY = centerY - paperHeight / 2;
+
+   var paper = new Raphael( document.getElementById('raphael_canvas'), paperWidth, paperHeight );
+
+   drawFrame( paper, newFrame );
+   
+   document.getElementById( 'drawFrame' ).onclick = function() {
+      drawFrame( paper, newFrame );
+      return false;
+   };
+
+}
+
+
+</script>
+
+<div id="raphael_canvas" style="background-color:silver;width:600px" align="center"></div> 
+
+<button id="drawFrame">draw word</button>
+
+</body>
+</html>
