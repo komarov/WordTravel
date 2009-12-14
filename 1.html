@@ -4,6 +4,8 @@
 
 <script type="text/javascript">
 
+var DEBUG = true;
+
 Raphael.el.getHotSpot = function() {
    var bbox = this.getBBox();
    return { 
@@ -35,7 +37,7 @@ function getFrame() {
       ],
       'Words': {
          '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0': 'aBc',
-         '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': 'secret',
+         '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': 'secretskdlgksjdklgjhsdklgjdhslkdh',
          '8ED02950-E7EB-11DE-B3BD-C724A05985A0': 'real',
          '8EC99946-E7EB-11DE-B3BD-C724A05985A0': '123',
          '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': '.......'
@@ -49,10 +51,11 @@ function drawWord( paper, word, width, height, x, y, round ) {
 
 
    var text = paper.text( x, y, word ).attr( { fill: "#fff" } );
-   console.log( rect.node.getBBox() );
   
-   text.getBBox(). 
-   var rect = paper.rect( x, y, width, height, round ).attr( {fill: "#223fa3" } );
+   var textBB = text.getBBox();
+   if( DEBUG ) console.log( textBB );
+   var rect = paper.rect( textBB.x - round, textBB.y - round, textBB.width + 2 * round, textBB.height + 2 * round, round ).attr( {fill: "#223fa3" } );
+   text.toFront();
    return rect;
 }
 
@@ -72,23 +75,33 @@ function isFree( places, x, y ) {
 
 }
 
+function stickToEdges( x, y, width, height, h ) {
+
+   if( x < h || y < h || x > width - h || y > height - h ) {
+      return true;
+   }
+   
+   return false;
+   
+}
+
 function drawFrame( paper, frame ) {
 
    var placedWords = {};
-   console.log( paper );
+   if( DEBUG ) console.log( paper );
    for( var wordUID in frame.Words ) {
       if( frame.Words.hasOwnProperty( wordUID ) ) {
-         x = Math.random() * paper.width;
-         y = Math.random() * paper.height;
+         var x = Math.random() * paper.width;
+         var y = Math.random() * paper.height;
 
-         while( !isFree( placedWords, x, y )  ) {
+         while( !isFree( placedWords, x, y ) || ( stickToEdges( x, y, paper.width, paper.height, 30 ) ) ) {
             x = Math.random() * paper.width;
             y = Math.random() * paper.height;      
          }
 
          placedWords[ wordUID ] = drawWord( paper, frame.Words[ wordUID ], 60, 20, x, y, 3 );
-         console.log( placedWords );
-         console.log( placedWords[ wordUID ] );
+         if( DEBUG ) console.log( placedWords );
+         if( DEBUG ) console.log( placedWords[ wordUID ] );
       }
    }
 
@@ -124,19 +137,13 @@ window.onload = function() {
 
    drawFrame( paper, newFrame );
    
-   document.getElementById( 'drawFrame' ).onclick = function() {
-      drawFrame( paper, newFrame );
-      return false;
-   };
 
 }
 
 
 </script>
 
-<div id="raphael_canvas" style="background-color:silver;width:600px" align="center"></div> 
-
-<button id="drawFrame">draw word</button>
+<div id="raphael_canvas" align="center" style="background-color:silver;width:600px" ></div>
 
 </body>
 </html>
