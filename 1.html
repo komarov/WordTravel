@@ -54,26 +54,18 @@ function getFrame() {
          '8ED02950-E7EB-11DE-B3BD-C724A05985A0': 'real',
          '8EC99946-E7EB-11DE-B3BD-C724A05985A0': '123',
          '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': '.......'
-      },
-      'Hidden': {
-         '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0': true,
-         '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': false,
-         '8ED02950-E7EB-11DE-B3BD-C724A05985A0': true,
-         '8EC99946-E7EB-11DE-B3BD-C724A05985A0': false,
-         '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': true
       }
    };
 
    return frame;
 }
 
-function NewWordCell( paper, x, y, text, links, hidden ) {
+function NewWordCell( paper, text, links ) {
    return {
-      'Text': paper.text( x, y, text ).hide(),
-      'Cell': paper.rect( x, y ).hide(),
-      'Links': links,
-      'Hidden': hidden
-   }
+      'Text': paper.text( 0, 0, text ).hide(),
+      'Cell': paper.rect( 0, 0 ).hide(),
+      'Links': links
+   };
 }
 
 function parseWordCells( frame, paper ) {
@@ -82,12 +74,11 @@ function parseWordCells( frame, paper ) {
 
    for( var wordUID in frame.Words ) {
       if( frame.Words.hasOwnProperty( wordUID ) ) {
-         wordCells[ wordUID ] = NewWordCell( paper, 0, 0, frame.Words[ wordUID ], getLinks( frame, wordUID ), true );
+         wordCells[ wordUID ] = NewWordCell( paper, frame.Words[ wordUID ], getLinks( frame, wordUID ) );
          if( DEBUG ) console.log( wordCells[ wordUID ] );
       }
    }
 
-//   if( DEBUG ) console.log( wordCells );
    return wordCells;
 }
 
