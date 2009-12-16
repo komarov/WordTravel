@@ -1,7 +1,9 @@
 <html>
 <body>
 <script type="text/javascript" src="raphael-min.js"></script>
-
+<script type="text/javascript" src="Word.js"></script>
+<script type="text/javascript" src="Frame.js"></script>
+<script type="text/javascript" src="WordTravel.js"></script>
 <script type="text/javascript">
 
 var DEBUG = true;
@@ -27,38 +29,6 @@ Raphael.el.getHotSpot = function() {
    };
 };
 
-function getFrame() {
-
-   var frame = {
-      'Links': [
-         [
-            '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0',
-            '8EC99946-E7EB-11DE-B3BD-C724A05985A0'
-         ],
-         [
-            '8EC99946-E7EB-11DE-B3BD-C724A05985A0',
-            '8ED02950-E7EB-11DE-B3BD-C724A05985A0'
-         ],
-         [
-            '8ED02950-E7EB-11DE-B3BD-C724A05985A0',
-            '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0'
-         ],
-         [
-            '8ED02950-E7EB-11DE-B3BD-C724A05985A0',
-            '8EDA547A-E7EB-11DE-B3BD-C724A05985A0'
-         ]
-      ],
-      'Words': {
-         '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0': 'aBc',
-         '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': 'secretskdlgksjdklgjhsdklgjdhslkdh',
-         '8ED02950-E7EB-11DE-B3BD-C724A05985A0': 'real',
-         '8EC99946-E7EB-11DE-B3BD-C724A05985A0': '123',
-         '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': '.......'
-      }
-   };
-
-   return frame;
-}
 
 function NewWordCell( paper, text, links ) {
    return {
@@ -160,7 +130,7 @@ function drawLinks( paper, wordCells, frame ) {
 }
 
 
-function drawWord( paper, word, x, y, round ) {
+/*function drawWord( paper, word, x, y, round ) {
 
    var text = paper.text( x, y, word ).attr( { fill: "#fff", font: "18px \"Terminal\"" } );
    text.hide();
@@ -176,7 +146,7 @@ function drawWord( paper, word, x, y, round ) {
 
    return { 'rectangle': rect, 'txt': text };
 }
-
+*/
 function isFree( places, x, y ) {
 
    if( x == 0 && y == 0 ) {
@@ -207,7 +177,28 @@ function stickToEdges( x, y, width, height, h ) {
 
 window.onload = function() { 
 
-   var paperWidth = 800;
+   var paper = new Raphael( document.getElementById('raphael_canvas'), 800, 600 );
+
+   WordTravel = new WordTravel( paper );
+
+   WordTravel.Frame = new Frame( '' );
+   var tmpFrame = getFrame();
+   WordTravel.Frame.setWords( tmpFrame );
+
+   if( DEBUG ) console.log( WordTravel.Frame );
+
+   WordTravel.Frame.Words[ '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 200, 200 );
+   WordTravel.Frame.Words[ '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 400, 300 );
+   WordTravel.Frame.Words[ '8ED02950-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 400, 200 );
+   WordTravel.Frame.Words[ '8EC99946-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 450, 150 );
+   WordTravel.Frame.Words[ '8EDA547A-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 140, 300 );
+
+//   WordTravel.Frame.render( paper );
+   WordTravel.renderCurrentFrame();
+   
+   if( DEBUG ) console.log( WordTravel );
+
+/*   var paperWidth = 800;
    var paperHeight = 600;
    var centerX =  window.innerWidth / 2;
    var centerY =  window.innerHeight / 2;
@@ -222,8 +213,9 @@ window.onload = function() {
    drawLinks( paper, wordCells, newFrame );
 
    if( DEBUG ) console.log( wordCells );
+   */
 
-}
+};
 
 
 </script>
