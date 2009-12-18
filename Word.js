@@ -1,19 +1,15 @@
 //Word.js
 //Contains the description of the Word object
 
-function Word( text, links) {
+function Word( text ) {
 
    this.Text = text;
    this.X = 0;
    this.Y = 0;
-   this.Links = links;
 
 //----methods----
-
    this.setCoordinates = setCoordinates;
    this.drawWord = drawWord;
-
-
 }
 
 function setCoordinates( x, y ) {
@@ -22,8 +18,7 @@ function setCoordinates( x, y ) {
 
    this.X = x;
    this.Y = y; 
-   if( DEBUG ) console.log( this.X, this.Y );
-    
+   if( DEBUG ) console.log( this.X, this.Y );    
 }
 
 function drawWord( paper, round ) {
@@ -35,6 +30,7 @@ function drawWord( paper, round ) {
    var textBB = text.getBBox();
    var rect = paper.rect( textBB.x , textBB.y, textBB.width + 4 * round, textBB.height + 2 * round, round ).attr( { fill: "#000", stroke: "#0f0" } );
    rect.toBack();
-}
 
+   return rect;
+}
 

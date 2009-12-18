@@ -6,7 +6,7 @@
 <script type="text/javascript" src="WordTravel.js"></script>
 <script type="text/javascript">
 
-var DEBUG = true;
+var DEBUG = false;
 
 Object.prototype.map = function( mapFunction ) {
 
@@ -29,7 +29,7 @@ Raphael.el.getHotSpot = function() {
    };
 };
 
-
+/*
 function NewWordCell( paper, text, links ) {
    return {
       'Text': paper.text( 0, 0, text ).hide(),
@@ -110,43 +110,6 @@ function drawWordCells( paper, wordCells ) {
    }
 }
 
-function drawLinks( paper, wordCells, frame ) {
-
-   var cells = wordCells.map( function( wordCell ) { return wordCell.Cell } );
-   for( var index in frame.Links ) {
-      if( frame.Links.hasOwnProperty( index ) ) {
-         var link = frame.Links[ index ]; 
-         if( DEBUG ) console.log( cells[ link[ 0 ] ] );
-         var hotSpot_0 =  cells[ link[ 0 ] ].getHotSpot();
-         var hotSpot_1 =  cells[ link[ 1 ] ].getHotSpot();
-
-         var path = paper.path( "M" + hotSpot_0.x + " " + hotSpot_0.y + "L" + hotSpot_1.x + " " + hotSpot_1.y ).attr( 'stroke', '#0f0' );
-         path.toBack();
-         
-
-      }
-   }
-  
-}
-
-
-/*function drawWord( paper, word, x, y, round ) {
-
-   var text = paper.text( x, y, word ).attr( { fill: "#fff", font: "18px \"Terminal\"" } );
-   text.hide();
-   if( DEBUG ) console.log( text.node );
-   text.node.onclick = function () { text.attr( { fill: "black" } ) };
-  
-   var textBB = text.getBBox();
-   var rect = paper.rect( textBB.x, textBB.y, textBB.width + 4 * round, textBB.height + 2 * round, round ).attr( { fill: "#000", stroke: "#0f0" } );
-   rect.hide();
-   if( DEBUG ) console.log( rect.node );
-   rect.node.onclick = function () { rect.attr( { fill: "white" } ) };
-
-
-   return { 'rectangle': rect, 'txt': text };
-}
-*/
 function isFree( places, x, y ) {
 
    if( x == 0 && y == 0 ) {
@@ -174,6 +137,7 @@ function stickToEdges( x, y, width, height, h ) {
    return false;
    
 }
+ */
 
 window.onload = function() { 
 
@@ -181,11 +145,9 @@ window.onload = function() {
 
    WordTravel = new WordTravel( paper );
 
-   WordTravel.Frame = new Frame( '' );
-   var tmpFrame = getFrame();
-   WordTravel.Frame.setWords( tmpFrame );
+   WordTravel.Frame = new Frame( 'dfhgkljhlkj' );
 
-   if( DEBUG ) console.log( WordTravel.Frame );
+   if( DEBUG ) console.log( WordTravel );
 
    WordTravel.Frame.Words[ '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 200, 200 );
    WordTravel.Frame.Words[ '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 400, 300 );
@@ -193,27 +155,9 @@ window.onload = function() {
    WordTravel.Frame.Words[ '8EC99946-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 450, 150 );
    WordTravel.Frame.Words[ '8EDA547A-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 140, 300 );
 
-//   WordTravel.Frame.render( paper );
    WordTravel.renderCurrentFrame();
    
    if( DEBUG ) console.log( WordTravel );
-
-/*   var paperWidth = 800;
-   var paperHeight = 600;
-   var centerX =  window.innerWidth / 2;
-   var centerY =  window.innerHeight / 2;
-   var startX = centerX - paperWidth / 2;
-   var startY = centerY - paperHeight / 2;
-
-   var paper = new Raphael( document.getElementById('raphael_canvas'), paperWidth, paperHeight );
-
-   var newFrame = getFrame();
-   var wordCells = parseWordCells( newFrame, paper );
-   drawWordCells( paper, wordCells );
-   drawLinks( paper, wordCells, newFrame );
-
-   if( DEBUG ) console.log( wordCells );
-   */
 
 };
 

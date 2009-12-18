@@ -1,14 +1,5 @@
-/*function include(url) {
-
-  var script = document.createElement('script');
-  script.setAttribute('type', 'text/javascript')
-  script.setAttribute('src', url);
-  document.getElementsByTagName('head').item(0).appendChild(script);
-}
-
-include( "raphael-min.js" );
-include( "Frame.js" );
-*/
+//WordTravel.js
+//Contains WordTravel object description
 
 function WordTravel( paper ) {
 
@@ -28,12 +19,12 @@ function WordTravel( paper ) {
 
 function setUser( user ) {
 
-   this.user = user;
+   this.User = user;
 }
 
 function setFrame( frame ) {
 
-   this.frame = frame;
+   this.Frame = frame;
 }
 
 function renderCurrentFrame() {
@@ -43,8 +34,8 @@ function renderCurrentFrame() {
 
 function renderFrame ( frameUID ) {
 
-   this.Frame = new Frame( frameUID );
-   this.Frame.render( this.Paper );   
+   var anotherFrame = new Frame( frameUID );
+   anotherFrame.render( this.Paper );   
 }
 
 function guessWord( guess ) {
