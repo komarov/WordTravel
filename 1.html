@@ -6,7 +6,7 @@
 <script type="text/javascript" src="WordTravel.js"></script>
 <script type="text/javascript">
 
-var DEBUG = false;
+var DEBUG = true;
 
 Object.prototype.map = function( mapFunction ) {
 
@@ -29,7 +29,8 @@ Raphael.el.getHotSpot = function() {
    };
 };
 
-/*
+
+/* 
 function NewWordCell( paper, text, links ) {
    return {
       'Text': paper.text( 0, 0, text ).hide(),
@@ -137,7 +138,20 @@ function stickToEdges( x, y, width, height, h ) {
    return false;
    
 }
- */
+  */
+
+function getCoordinates( x_0, y_0, count, h, paper ) {
+   
+   var coordinates = [];
+
+   for( var i = 0; i < count; i ++ ) {
+      if( DEBUG ) console.log( i );
+      coordinates.push( [ x_0 + h * ( 2 + count - i ) * Math.cos( 2 + i ) , y_0 + h * ( 2 + count -  i ) * Math.sin( 2 + i )] );
+      var rect = paper.rect( coordinates[ i ][ 0 ], coordinates[ i ][ 1 ], 10, 10 ).attr( { fill: '#f00', stroke: '#f00' } );
+   }
+
+   return coordinates;
+}
 
 window.onload = function() { 
 
@@ -149,18 +163,41 @@ window.onload = function() {
 
    if( DEBUG ) console.log( WordTravel );
 
+   var newCoords = getCoordinates( paper.width / 2, paper.height / 2, 5, 30, paper );
+
+   var index = 0;
+   for( var word in WordTravel.Frame.Words ) {
+      if( WordTravel.Frame.Words.hasOwnProperty( word ) ) {
+         var coord = newCoords[ index ];
+         if( DEBUG ) console.log( word );
+         WordTravel.Frame.Words[ word ].setCoordinates( coord[ 0 ], coord[ 1 ] );
+         index++;
+      }
+   }
+   
+ 
+/*
    WordTravel.Frame.Words[ '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 200, 200 );
    WordTravel.Frame.Words[ '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 400, 300 );
    WordTravel.Frame.Words[ '8ED02950-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 400, 200 );
    WordTravel.Frame.Words[ '8EC99946-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 450, 150 );
    WordTravel.Frame.Words[ '8EDA547A-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 140, 300 );
-
+*/
    WordTravel.renderCurrentFrame();
    
    if( DEBUG ) console.log( WordTravel );
-
+  if( DEBUG ) console.log( newCoords );
 };
 
+function abc() {
+   var counter = 0;
+   return function () { counter++; console.log( counter ); };
+}
+
+var incCounter = abc();
+incCounter();
+incCounter();
+incCounter();
 
 </script>
 

@@ -43,6 +43,7 @@ function Frame( frameUID ) {
 //----methods----
    this.render = render;
    this.receiveFrameByUID = receiveFrameByUID;
+   this.getLinksCount = getLinksCount;
 
 //----additional actions----
    this.receiveFrameByUID( frameUID );
@@ -65,26 +66,44 @@ function receiveFrameByUID( frameUID ) {
 
 function render( paper ) {
 
-   var rectangles = {};
-
    for( var wordUID in this.Words ) {
       if( this.Words.hasOwnProperty( wordUID ) ) {
          if( DEBUG ) console.log(  this.Words[ wordUID ] );
-         rectangles[ wordUID ] = this.Words[ wordUID ].drawWord( paper, 3 );
+         this.Words[ wordUID ].drawWord( paper, 3 );
       }
    }
-
-   if( DEBUG ) console.log( rectangles );
 
    for( var index in this.Links ) {
       if( this.Links.hasOwnProperty( index ) ) {
          var link = this.Links[ index ];
 
-         var hotSpot_0 =  rectangles[ link[ 0 ] ].getHotSpot();
-         var hotSpot_1 =  rectangles[ link[ 1 ] ].getHotSpot();
+         var hotSpot_0 =  this.Words[ link[ 0 ] ].hotSpot();
+         var hotSpot_1 =  this.Words[ link[ 1 ] ].hotSpot();
+
+         if( DEBUG ) console.log( 'hspots:', hotSpot_0, hotSpot_1, link );
 
          var path = paper.path( "M" + hotSpot_0.x + " " + hotSpot_0.y + "L" + hotSpot_1.x + " " + hotSpot_1.y ).attr( 'stroke', '#0f0' );
          path.toBack();
       }
    }
 }
+
+function getLinksCount( wordUID ) {
+
+   var linksCount = 0;
+   
+   for( var index in this.Links ) {
+      if( this.Links.hasOwnProperty( index ) ) {
+         var link = this.Links[ index ];
+         if( wordUID == link[ 0 ]  ) {
+            linksCount++;
+         }
+         if( wordUID == link[ 1 ] ) {
+            linksCount++;
+         }
+      }
+   }
+
+   return linksCount;
+}
+
