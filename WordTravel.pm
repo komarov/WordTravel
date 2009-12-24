@@ -6,7 +6,7 @@ use lib 'lib';
 use WordGraph;
 
 get '/' => sub {
-   template 'index';
+   send_file '/index.html';
 };
 
 get '/login/:Uid' => sub {
