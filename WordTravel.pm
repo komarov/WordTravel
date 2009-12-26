@@ -12,7 +12,7 @@ my $WordGraph = WordGraph->new();
 
 #-------------------------------------------------------------------------------
 before sub {
-   var User = $WordGraph->getUser( cookies->{UserUid} );
+   var User => $WordGraph->getUser( cookies->{UserUid} );
    set_cookie UserUid => vars->{User}->getUid()->as_string();
 };
 
