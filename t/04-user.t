@@ -70,5 +70,11 @@ ok(
 use Data::Dumper;
 print Dumper $User->renderFrame( $Frame );
 
+ok(
+   $User->getFrameList(),
+   'dummy getFrameList works'
+);
+
+
 $User->_delete();
 $Frame->_delete();

@@ -14,7 +14,12 @@ class WordGraph::Object with WordGraph::Uid {
 
    #-------------------------------------------------------------------------------
    method _getStorage {
-      return 'data/' . blessed( $self ) . $self->getUid();
+      if( -e 'data/' . blessed( $self ) ) {
+         return 'data/' . blessed( $self ) . '/' . $self->getUid();
+      }
+      else {
+         return 'data/' . blessed( $self ) . $self->getUid();
+      }
    }
 
 

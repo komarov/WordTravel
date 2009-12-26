@@ -5,6 +5,8 @@ class WordGraph::User extends WordGraph::Object {
    use List::MoreUtils qw( none any );
    use List::Util qw( first );
    use Data::GUID;
+   use IO::All -utf8;
+   use JSON;
 
 
    has GuessedWords => ( is => 'rw', isa => 'ArrayRef[HashRef[Data::GUID|Str]]', default => sub{ [] } ); 
@@ -87,5 +89,29 @@ class WordGraph::User extends WordGraph::Object {
    #-------------------------------------------------------------------------------
    method guessWordInFrame( WordGraph::Frame :$Frame!, Str :$Guess! ) {
       return any { $self->guessWord( Word => $_, Guess => $Guess ) } $Frame->getWords();
+   }
+
+
+   #-------------------------------------------------------------------------------
+   # Returns { FrameUid => { Title => '' }, }
+   method getFrameList {
+      if( my $FrameListJson = io( 'data/FrameList' )->all ) {
+         my $FrameList = decode_json( $FrameListJson );
+         my %CompletedFrameUids = map { ( "$_" => 1 ) } $self->_getCompletedFrameUids();
+         foreach my $FrameUid ( keys %$FrameList ) {
+            if( $CompletedFrameUids{ $FrameUid } ) {
+               $FrameList->{ $FrameUid }->{Completed} = 1;
+            }
+         }
+         return $FrameList;
+      }
+      return;
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method _getCompletedFrameUids {
+      # !!! implement later
+      return;
    }
 }
