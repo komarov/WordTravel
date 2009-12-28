@@ -6,7 +6,7 @@ use WordGraph::User;
 
 class WordGraph {
    #-------------------------------------------------------------------------------
-   method getUser( Maybe[Data::GUID] $Uid? ) {
+   method getUser( $Uid? ) {
       if( $Uid ) {
          return WordGraph::User->new( Uid => $Uid );
       }
@@ -17,7 +17,7 @@ class WordGraph {
 
 
    #-------------------------------------------------------------------------------
-   method getFrame( Maybe[Data::GUID] $Uid? ) {
+   method getFrame( $Uid? ) {
       if( $Uid ) {
          return WordGraph::Frame->new( Uid => $Uid );
       }
