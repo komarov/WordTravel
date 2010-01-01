@@ -79,9 +79,11 @@ class WordGraph::User extends WordGraph::Object {
       my @VisibleLinks = map { [ $_->[ 0 ]->as_string(), $_->[ 1 ]->as_string() ] } 
                          grep { exists $VisibleWords{ $_->[ 0 ] } || exists $VisibleWords{ $_->[ 1 ] } } 
                          $Frame->getLinks();
+      my %Coordinates = map { $_ => $Frame->getCoordinates( $Frame->getWordByUid( Data::GUID->from_string( $_ ) ) ) } keys %VisibleWords;
       return {
-         Words => \%VisibleWords,
-         Links => \@VisibleLinks,
+         Words       => \%VisibleWords,
+         Links       => \@VisibleLinks,
+         Coordinates => \%Coordinates,
       };
    }
 

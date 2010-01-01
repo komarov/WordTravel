@@ -9,10 +9,9 @@ use WordGraph;
 
 my $WordGraph = WordGraph->new();
 
-
 #-------------------------------------------------------------------------------
 before sub {
-   var User => $WordGraph->getUser( 'BB2589D8-F26D-11DE-B903-4E49BECC9A9F' );
+   var User => $WordGraph->getUser();
    set_cookie UserUid => vars->{User}->getUid()->as_string();
 };
 
@@ -31,24 +30,24 @@ get '/User/:Uid' => sub {
 
 
 #-------------------------------------------------------------------------------
+get '/Frame/List' => sub {
+   content_type 'application/json';
+   my $FrameList = vars->{User}->getFrameList();
+   return to_json( $FrameList );
+};
+
+
+#-------------------------------------------------------------------------------
 get '/Frame/:Uid' => sub {
    my $FrameUid = params->{Uid};
    if( my $Frame = $WordGraph->getFrame( $FrameUid ) ) {
       content_type 'application/json';
-      my $RenderedFrame = vars->{User}->renderFrame();
+      my $RenderedFrame = vars->{User}->renderFrame( $Frame );
       return to_json( $RenderedFrame );
    }
    else {
       redirect '/';
    }
-};
-
-
-#-------------------------------------------------------------------------------
-get '/Frame/List' => sub {
-   content_type 'application/json';
-   my $FrameList = vars->{User}->getFrameList();
-   return to_json( $FrameList );
 };
 
 

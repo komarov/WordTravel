@@ -15,6 +15,12 @@ ok(
    $Frame->isa( 'WordGraph::Frame' ),
    'frame was created successfully'
 );
+
+ok(
+   $Frame->getWordByUid( $Word1->getUid() )->isEqual( $Word1 ),
+   'getWordByUid works'
+);
+
 $Frame->_save();
 
 my $SameFrame = WordGraph::Frame->new( Uid => $Frame->getUid() );
@@ -39,5 +45,10 @@ ok(
    scalar @Linked == 2,
    'both linked words were found'
 );
-
+ok(
+   $Frame->setCoordinates( $Word1, { X => 1, Y => 2 } ),
+   'setCoordinates works'
+);
+use Data::Dumper;
+print Dumper $Frame->getCoordinates( $Word1 );
 $SameFrame->_delete();

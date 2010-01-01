@@ -5,15 +5,17 @@ class WordGraph::Frame extends WordGraph::Object {
    use List::Util qw( first );
 
 
-   has Words => ( is => 'rw', isa => 'ArrayRef[WordGraph::Word]', default => sub { [] } );
-   has Links => ( is => 'rw', isa => 'ArrayRef[Pair[Data::GUID]]', default => sub { [] } );
+   has Words         => ( is => 'rw', isa => 'ArrayRef[WordGraph::Word]', default => sub { [] } );
+   has Links         => ( is => 'rw', isa => 'ArrayRef[Pair[Data::GUID]]', default => sub { [] } );
+   has Coordinates   => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 
 
    #-------------------------------------------------------------------------------
    method _composeRawData {
       return { 
-         Words => [ map { { Uid => $_->getUid()->as_string(), Mask => $_->getMask(), Hash => $_->getHash() } } @{ $self->Words } ],
-         Links => [ map { [ $_->[ 0 ]->as_string(), $_->[ 1 ]->as_string() ] } @{ $self->Links } ]
+         Words       => [ map { { Uid => $_->getUid()->as_string(), Mask => $_->getMask(), Hash => $_->getHash() } } @{ $self->Words } ],
+         Links       => [ map { [ $_->[ 0 ]->as_string(), $_->[ 1 ]->as_string() ] } @{ $self->Links } ],
+         Coordinates => { map { $_ => $self->Coordinates->{ $_ } } keys %{ $self->Coordinates } },
       };
    }
 
@@ -25,6 +27,9 @@ class WordGraph::Frame extends WordGraph::Object {
       }
       if( my $Links = $RawData->{Links} ) {
          $self->Links( [ map { [ Data::GUID->from_string( $_->[ 0 ] ), Data::GUID->from_string( $_->[ 1 ] ) ] } @$Links ] );
+      }
+      if( my $Coordinates = $RawData->{Coordinates} ) {
+         $self->Coordinates( $Coordinates );
       }
       return 1;
    }
@@ -76,5 +81,18 @@ class WordGraph::Frame extends WordGraph::Object {
       my $UidsPair = [ map { $_->getUid() } ( $WordA, $WordB )];
       push @{ $self->Links }, $UidsPair;
       return $self->_save();
+   }
+
+
+   #-------------------------------------------------------------------------------
+   method setCoordinates( WordGraph::Word $Word!, HashRef $Coordinates ) {
+      $self->Coordinates->{ $Word->getUid() } = $Coordinates;
+      return $self->_save();
+   }
+
+   
+   #-------------------------------------------------------------------------------
+   method getCoordinates( WordGraph::Word $Word! ) {
+      return $self->Coordinates->{ $Word->getUid() };
    }
 }

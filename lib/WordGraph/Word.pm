@@ -2,7 +2,7 @@ use MooseX::Declare;
 
 
 class WordGraph::Word with WordGraph::Uid {
-   use Digest::MD5 qw( md5 );
+   use Digest::MD5 qw( md5_hex );
    use Encode qw( encode_utf8 );
 
 
@@ -50,7 +50,7 @@ class WordGraph::Word with WordGraph::Uid {
 
    #-------------------------------------------------------------------------------
    sub _hash {
-      return md5( encode_utf8( lc( shift ) ) );
+      return md5_hex( encode_utf8( lc( shift ) ) );
    }
 
 

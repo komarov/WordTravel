@@ -58,6 +58,8 @@ $Frame->linkWords( $AnotherWord, $NewWord );
 $Frame->linkWords( $NewWord, $SecretWord );
 $Frame->linkWords( $NewWord, $SecretWord2 );
 
+$Frame->setCoordinates( $_, { X => int( rand( 50 ) ), Y => int( rand( 50 ) ) } ) foreach @Words;
+
 ok(
    $User->guessWordInFrame( Frame => $Frame, Guess => 'secret' ),
    'guessed word in frame'
