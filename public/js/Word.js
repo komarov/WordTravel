@@ -1,58 +1,49 @@
-//Word.js
 //Contains the description of the Word object
 
-function Word( text ) {
+function createWord( Options ) {
 
-   this.Text = text;
-   this.X = 0;
-   this.Y = 0;
+   var that = createObject( Options );
+
+   that.Text = Options.Text;
+   that.X = 0;
+   that.Y = 0;
 
 //---private properties---
    var Raphael_rect;
    var Raphael_text;
 
 //----methods----
-   this.setCoordinates = setCoordinates;
-   this.drawWord = function drawWord( paper, round ) {
+   that.drawWord = function( CornerRound ) {
+      
+      var Paper = that.getResource( 'Paper' );
+      if( Paper ) {
+         var Coordinates = Paper.convertCoordinates( that );
+         if( DEBUG ) console.log(  Coordinates.X, Coordinates.Y, that.Text  ) ;
 
-      if( DEBUG ) console.log(  this.X, this.Y, this.Text  ) ;
+         Raphael_text = Paper.text( Coordinates.X, Coordinates.Y, that.Text ).attr( { fill: "#fff", font: "18px \"Dejavu Sans\"" } );
 
-      Raphael_text = paper.text( this.X, this.Y, this.Text ).attr( { fill: "#fff", font: "18px \"Dejavu Sans\"" } );
-
-      var Raphael_textBB = Raphael_text.getBBox();
-      Raphael_rect = paper.rect( Raphael_textBB.x , Raphael_textBB.y, Raphael_textBB.width + 4 * round, Raphael_textBB.height + 2 * round, round ).attr( { fill: "#000", stroke: "#0f0" } );
-      Raphael_rect.toBack();
-
-      Raphael_rect.node.onclick = function() { 
-         if( Raphael_rect.attrs.fill == "#000" ) {
-            Raphael_rect.attr( { fill: "#f00" } ); 
-            var textarea = document.createElement( 'INPUT' ); 
-            document.body.appendChild( textarea );
-         }
-         else {
-            Raphael_rect.attr( { fill: "#000" } );            
-            var tareas = document.body.getElementsByTagName( 'INPUT' );
-            if( DEBUG ) console.log( document, tareas );
-            for( var index in tareas ) {
-               document.body.removeChild( tareas[ index ] );
-            }
-         }
-      };
+         var Raphael_textBB = Raphael_text.getBBox();
+         Raphael_rect = Paper.rect( Raphael_textBB.x , Raphael_textBB.y, Raphael_textBB.width + 4 * CornerRound, Raphael_textBB.height + 2 * CornerRound, CornerRound ).attr( { fill: "#000", stroke: "#0f0" } );
+         Raphael_rect.toBack();
+      }
    };
 
-   this.hotSpot = function hotSpot() {
+   that.getHotSpot = function() {
 
       if( DEBUG ) console.log( 'from Word.hotSpot:', Raphael_rect );
       return Raphael_rect.getHotSpot();
+   }; 
 
-   }
+   that.setCoordinates = function( Coordinates ) {
+
+      if( DEBUG ) console.log( Coordinates );
+
+      that.X = Coordinates.X;
+      that.Y = Coordinates.Y;
+      if( DEBUG ) console.log( that.X, that.Y );    
+   };
+
+   return that;
 }
 
-function setCoordinates( x, y ) {
 
-   if( DEBUG ) console.log( x, y );
-
-   this.X = x;
-   this.Y = y; 
-   if( DEBUG ) console.log( this.X, this.Y );    
-}

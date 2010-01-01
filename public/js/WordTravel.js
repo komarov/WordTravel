@@ -1,44 +1,63 @@
-//WordTravel.js
 //Contains WordTravel object description
 
-function WordTravel( paper ) {
+function createWordTravel( Options ) {
 
-   this.PaperWidth = 800;
-   this.PaperHeight = 600;
-   this.Paper = paper;
-   this.Frame = NaN;
-   
+   var that = createObject( Options );
+
+   that.Paper = Options.Paper;
+   that.Paper.convertCoordinates = function( Coordinates ) {
+      var Width = that.Paper.width;
+      var Height = that.Paper.height;
+
+      var XStep = Width / 100;
+      var YStep = Height / 100;
+
+      return { X: Width / 2 + XStep * Coordinates.X, Y: Height / 2 - YStep * Coordinates.Y };
+   };
+
 //----methods----
-   this.setUser = setUser;
-   this.setFrame = setFrame;
-   this.renderCurrentFrame = renderCurrentFrame; 
-   this.renderFrame = renderFrame;
-   this.guessWord = guessWord;
 
-} 
+   that.run = function() {
+      
+      that.Frame = createFrame( { UID: 'dfhgkljhlkj', Context: that } );
+      if( DEBUG ) console.log( that );
+      that.renderCurrentFrame();
+   };
 
-function setUser( user ) {
+   that.login = function() {
+   };
 
-   this.User = user;
-}
 
-function setFrame( frame ) {
+   that.setUser = function( User ) {
 
-   this.Frame = frame;
-}
+      that.User = User;
+   };
 
-function renderCurrentFrame() {
+   that.setFrame = function( Frame ) {
 
-   this.Frame.render( this.Paper );
-}
+      that.Frame = Frame;
+   };
 
-function renderFrame ( frameUID ) {
+   that.renderCurrentFrame = function() {
 
-   var anotherFrame = new Frame( frameUID );
-   anotherFrame.render( this.Paper );   
-}
+      that.Frame.render();
+   };
 
-function guessWord( guess ) {
+   that.FrameByUID = function( FrameUID ) {
 
+      var FrameData = getFrameData( FrameUID );
+      if( DEBUG ) console.log( FrameData );
+
+      for( var wordUID in FrameData.Words ) {
+         if( FrameData.Words.hasOwnProperty( wordUID ) ) {
+            that.Words[ wordUID ] = new Word( FrameData.Words[ wordUID ] );
+            if( DEBUG ) console.log( that.Words[ wordUID ] );
+         }
+      }
+
+      that.Links = Frame.Links;
+   };
+
+   return that;
 }
 

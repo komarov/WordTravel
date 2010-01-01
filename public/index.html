@@ -1,216 +1,46 @@
 <html>
+   <head>
+      <style type="text/css">
+         #frame {
+            left:50%;
+            position:absolute;
+            top:50%;
+            background-color:black;
+         }
+      </style>
+   </head>
+
 <body>
 <a href="http://jquery.com/">jQuery</a>
 
 <script type="text/javascript" src="js/raphael-min.js"></script>
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="js/Object.js"></script>
 <script type="text/javascript" src="js/Word.js"></script>
 <script type="text/javascript" src="js/Frame.js"></script>
 <script type="text/javascript" src="js/WordTravel.js"></script>
 <script type="text/javascript">
+   var DEBUG = true;
 
-var DEBUG = true;
-/*
-Object.prototype.map = function( mapFunction ) {
-
-   var result = {};
-
-   for( var property in this ) {
-      if( this.hasOwnProperty( property ) ) {
-         result[ property ] = mapFunction( this[ property ] );
-      }
-   }
-
-   return result;
-};
-*/
-Raphael.el.getHotSpot = function() {
-   var bbox = this.getBBox();
-   return { 
-      x: bbox.x + bbox.width / 2, 
-      y: bbox.y + bbox.height / 2
+   Raphael.el.getHotSpot = function() {
+      var bbox = this.getBBox();
+      return { 
+         x: bbox.x + bbox.width / 2, 
+         y: bbox.y + bbox.height / 2
+      };
    };
-};
 
-
-/* 
-function NewWordCell( paper, text, links ) {
-   return {
-      'Text': paper.text( 0, 0, text ).hide(),
-      'Cell': paper.rect( 0, 0 ).hide(),
-      'Links': links
-   };
-}
-
-function parseWordCells( frame, paper ) {
-   
-   var wordCells = {};
-
-   for( var wordUID in frame.Words ) {
-      if( frame.Words.hasOwnProperty( wordUID ) ) {
-         wordCells[ wordUID ] = NewWordCell( paper, frame.Words[ wordUID ], getLinks( frame, wordUID ) );
-         if( DEBUG ) console.log( wordCells[ wordUID ] );
-      }
-   }
-
-   return wordCells;
-}
-
-function getLinks( frame, UID ) {
-
-   var links = [];
-   
-   for( var index in frame.Links ) {
-      if( frame.Links.hasOwnProperty( index ) ) {
-         var link = frame.Links[ index ];
-         if( UID == link[ 0 ]  ) {
-            links.push( link[ 1 ] );
-         }
-         if( UID == link[ 1 ] ) {
-            links.push( link[ 0 ] );
-         }
-      }
-   }
-
-   return links;
-}
-
-function drawWordCells( paper, wordCells ) {
-
-   if( DEBUG ) console.log( wordCells );
-
-   var cells = wordCells.map( function( wordCell ) { return wordCell.Cell } );
-   for( var wordUID in wordCells ) {
-      if( wordCells.hasOwnProperty( wordUID ) ) {
-
-         if( DEBUG ) console.log( wordCells[ wordUID ] );         
-         var word = "";
-         var x = y = 0;
-
-         var rect = wordCells[ wordUID ].Cell;
-         var txt = wordCells[ wordUID ].Text;
-
-
-         txt.attr( { fill: "#fff", font: "18px \"Terminal\"" } );
-         var edgeDelta_x = txt.getBBox().width;
-         var edgeDelta_y = txt.getBBox().height;
-
-         while( !isFree( cells, x, y ) ) { 
-            x = edgeDelta_x + Math.random() * ( paper.width - 2 * edgeDelta_x );
-            y = edgeDelta_y + Math.random() * ( paper.height - 2 * edgeDelta_y );
-
-            if( DEBUG ) console.log( x, y );
-         }
-
-
-         if( DEBUG ) console.log( x, y );
-         txt.attr( {x: x, y: y} );
-         rect.attr( { x: x - edgeDelta_x / 2 - 5, y: y - edgeDelta_y / 2, fill: "#000", stroke: "#0f0", width: edgeDelta_x + 10, height: edgeDelta_y + 6, r: 3 } );
-         rect.show();
-         rect.toBack();
-
-         txt.show();
-      }
-   }
-}
-
-function isFree( places, x, y ) {
-
-   if( x == 0 && y == 0 ) {
-      return false;
-   }
-   for( var place in places ) {
-      if( places.hasOwnProperty( place ) ) {
-         var occupied = places[ place ].getBBox(); 
-         if( ( x <= occupied.x + occupied.width + 10  && x >= occupied.x - 10 ) || ( y <= occupied.y + occupied.height + 10 && y >= occupied.y - 10 ) ) {
-            return false;
-         }
-      }
-   }
-   
-   return true;
-
-}
-
-function stickToEdges( x, y, width, height, h ) {
-
-   if( x < h || y < h || x > width - h || y > height - h ) {
-      return true;
-   }
-   
-   return false;
-   
-}
-  */
-
-function getCoordinates( x_0, y_0, count, h, paper ) {
-   
-   var coordinates = [];
-
-   for( var i = 0; i < count; i ++ ) {
-      if( DEBUG ) console.log( i );
-      coordinates.push( [ x_0 + h * ( 2 + count - i ) * Math.cos( 2 + i ) , y_0 + h * ( 2 + count -  i ) * Math.sin( 2 + i )] );
-   }
-
-   return coordinates;
-}
 $(document).ready(function(){
-   // Your code here
-   $("a").click(function(event){
-     alert("Thanks for visiting!");
+      var Width = 800;
+      var Height = 600;
+      var Paper = new Raphael( document.getElementById('frame'), Width, Height );
+      $('#frame').css( { height: Height + 'px', width: Width + 'px', 'margin-top': '-' + Height / 2 + 'px', 'margin-left': '-' + Width / 2 + 'px' } );
+      var WordTravel = createWordTravel( { Paper: Paper } );
+      WordTravel.run();
    });
-
-   var paper = new Raphael( document.getElementById('raphael_canvas'), 800, 600 );
-
-   WordTravel = new WordTravel( paper );
-
-   WordTravel.Frame = new Frame( 'dfhgkljhlkj' );
-
-   if( DEBUG ) console.log( WordTravel );
-
-   var newCoords = getCoordinates( paper.width / 2, paper.height / 2, 5, 30, paper );
-
-   var index = 0;
-   for( var word in WordTravel.Frame.Words ) {
-      if( WordTravel.Frame.Words.hasOwnProperty( word ) ) {
-         var coord = newCoords[ index ];
-         if( DEBUG ) console.log( word );
-         WordTravel.Frame.Words[ word ].setCoordinates( coord[ 0 ], coord[ 1 ] );
-         index++;
-      }
-   }
-   
- 
-/*
-   WordTravel.Frame.Words[ '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 200, 200 );
-   WordTravel.Frame.Words[ '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 400, 300 );
-   WordTravel.Frame.Words[ '8ED02950-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 400, 200 );
-   WordTravel.Frame.Words[ '8EC99946-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 450, 150 );
-   WordTravel.Frame.Words[ '8EDA547A-E7EB-11DE-B3BD-C724A05985A0' ].setCoordinates( 140, 300 );
-*/
-   WordTravel.renderCurrentFrame();
-   
-   if( DEBUG ) console.log( WordTravel );
-  if( DEBUG ) console.log( newCoords );
-
-});
-
-window.onload = function() { 
-
-};
-
-function abc() {
-   var counter = 0;
-   return function () { counter++; console.log( counter ); };
-}
-
-var incCounter = abc();
-incCounter();
-incCounter();
-incCounter();
-
 </script>
 
-<div id="raphael_canvas" align="center" style="background-color:black;width:800px" ></div>
+<div id="frame"></div>
+
 </body>
 </html>

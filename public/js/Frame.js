@@ -1,109 +1,91 @@
-//Frame.js
 //Contains the description of the Frame object
 
-function getFrame( frameUID ) {
 
-   var frame = {
-      'Links': [
-         [
+function createFrame( Options ) {
+   
+   var that = createObject( Options );
+   that.UID = Options.UID;
+
+   var Paper = that.getResource( 'Paper' );
+
+   function getFrameData() {
+
+      var FrameData = {
+         'Links': [
+            [
             '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0',
-            '8EC99946-E7EB-11DE-B3BD-C724A05985A0'
-         ],
+         '8EC99946-E7EB-11DE-B3BD-C724A05985A0'
+            ],
          [
             '8EC99946-E7EB-11DE-B3BD-C724A05985A0',
-            '8ED02950-E7EB-11DE-B3BD-C724A05985A0'
-         ],
+         '8ED02950-E7EB-11DE-B3BD-C724A05985A0'
+            ],
          [
             '8ED02950-E7EB-11DE-B3BD-C724A05985A0',
-            '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0'
-         ],
+         '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0'
+            ],
          [
             '8ED02950-E7EB-11DE-B3BD-C724A05985A0',
-            '8EDA547A-E7EB-11DE-B3BD-C724A05985A0'
-         ]
-      ],
-      'Words': {
-         '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0': 'aBc',
-         '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': 'secretskdlgksjdklgjhsdklgjdhslkdh',
-         '8ED02950-E7EB-11DE-B3BD-C724A05985A0': 'real',
-         '8EC99946-E7EB-11DE-B3BD-C724A05985A0': '123',
-         '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': '.......'
+         '8EDA547A-E7EB-11DE-B3BD-C724A05985A0'
+            ]
+            ],
+         'Words': {
+            '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0': 'aBc',
+            '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': 'secretskdlgksjdklgjhsdklgjdhslkdh',
+            '8ED02950-E7EB-11DE-B3BD-C724A05985A0': 'real',
+            '8EC99946-E7EB-11DE-B3BD-C724A05985A0': '123',
+            '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': '.......'
+         },
+         'Coordinates': {
+            '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0': { X: 0, Y: 0 },
+            '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': { X: 0, Y: 10 },
+            '8ED02950-E7EB-11DE-B3BD-C724A05985A0': { X: 10, Y: 20 },
+            '8EC99946-E7EB-11DE-B3BD-C724A05985A0': { X: 20, Y: 30 },
+            '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': { X: 30, Y: 40 }
+         }
+      };
+
+      return FrameData;
+   }
+
+   var FrameData = getFrameData();
+   var Links = FrameData.Links;
+   var Words = {};
+
+   var WordsData = FrameData.Words;
+   for( var WordUID in WordsData ) {
+      if( WordsData.hasOwnProperty( WordUID ) ) {
+         Words[ WordUID ] = createWord( { Text: WordsData[ WordUID ], Context: that } );
+         Words[ WordUID ].setCoordinates( FrameData.Coordinates[ WordUID ] );         
+         if( DEBUG ) console.log( Words[ WordUID ] );
+      }
+   }
+
+   that.render = function() {
+
+      var CornerRound = 3;
+      for( var wordUID in Words ) {
+         if( Words.hasOwnProperty( wordUID ) ) {
+            if( DEBUG ) console.log(  Words[ wordUID ] );
+            Words[ wordUID ].drawWord( CornerRound );
+         }
+      }
+
+      for( var index in Links ) {
+         if( Links.hasOwnProperty( index ) ) {
+            var Link = Links[ index ];
+
+            var HotSpot_0 =  Words[ Link[ 0 ] ].getHotSpot();
+            var HotSpot_1 =  Words[ Link[ 1 ] ].getHotSpot();
+
+            if( DEBUG ) console.log( 'hspots:', HotSpot_0, HotSpot_1, Link );
+
+            var Path = Paper.path( "M" + HotSpot_0.x + " " + HotSpot_0.y + "L" + HotSpot_1.x + " " + HotSpot_1.y ).attr( 'stroke', '#0f0' );
+            Path.toBack();
+         }
       }
    };
 
-   return frame;
-}
-
-function Frame( frameUID ) {
-   
-   this.Words = {};
-   this.Links = [];
-   this.UID = frameUID;
-
-//----methods----
-   this.render = render;
-   this.receiveFrameByUID = receiveFrameByUID;
-   this.getLinksCount = getLinksCount;
-
-//----additional actions----
-   this.receiveFrameByUID( frameUID );
-}
-
-function receiveFrameByUID( frameUID ) {
-
-   var frame = getFrame( frameUID );
-   if( DEBUG ) console.log( frame );
-
-   for( var wordUID in frame.Words ) {
-      if( frame.Words.hasOwnProperty( wordUID ) ) {
-         this.Words[ wordUID ] = new Word( frame.Words[ wordUID ] );
-         if( DEBUG ) console.log( this.Words[ wordUID ] );
-      }
-   }
-
-   this.Links = frame.Links;
-}
-
-function render( paper ) {
-
-   for( var wordUID in this.Words ) {
-      if( this.Words.hasOwnProperty( wordUID ) ) {
-         if( DEBUG ) console.log(  this.Words[ wordUID ] );
-         this.Words[ wordUID ].drawWord( paper, 3 );
-      }
-   }
-
-   for( var index in this.Links ) {
-      if( this.Links.hasOwnProperty( index ) ) {
-         var link = this.Links[ index ];
-
-         var hotSpot_0 =  this.Words[ link[ 0 ] ].hotSpot();
-         var hotSpot_1 =  this.Words[ link[ 1 ] ].hotSpot();
-
-         if( DEBUG ) console.log( 'hspots:', hotSpot_0, hotSpot_1, link );
-
-         var path = paper.path( "M" + hotSpot_0.x + " " + hotSpot_0.y + "L" + hotSpot_1.x + " " + hotSpot_1.y ).attr( 'stroke', '#0f0' );
-         path.toBack();
-      }
-   }
-}
-
-function getLinksCount( wordUID ) {
-
-   var linksCount = 0;
-   
-   for( var index in this.Links ) {
-      if( this.Links.hasOwnProperty( index ) ) {
-         var link = this.Links[ index ];
-         if( wordUID == link[ 0 ]  ) {
-            linksCount++;
-         }
-         if( wordUID == link[ 1 ] ) {
-            linksCount++;
-         }
-      }
-   }
-
-   return linksCount;
+   return that;
 }
 
