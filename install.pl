@@ -23,4 +23,4 @@ $Frame->linkWords( $AnotherWord, $NewWord );
 $Frame->linkWords( $NewWord, $SecretWord );
 $Frame->linkWords( $NewWord, $SecretWord2 );
 
-$Frame->setCoordinates( $_, { X => int( rand( 50 ) ), Y => int( rand( 50 ) ) } ) foreach @Words;
+$Frame->setCoordinates( $_, { X => 50 - int( rand( 100 ) ), Y => 50 - int( rand( 100 ) ) } ) foreach @Words;

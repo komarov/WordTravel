@@ -67,17 +67,15 @@ class WordGraph::User extends WordGraph::Object {
    method renderFrame( WordGraph::Frame $Frame! ) {
       my %VisibleWords = ();
       foreach my $Word ( $Frame->getWords() ) {
-         if( !exists $VisibleWords{ $Word->getUid() } ) {
-            if( $self->hasGuessed( $Word ) ) {
-               $VisibleWords{ $Word->getUid() } = $self->getGuess( $Word );
-               foreach my $LinkedWord ( $Frame->getLinkedWords( $Word ) ) {
-                  $VisibleWords{ $LinkedWord->getUid() } = $self->hasGuessed( $LinkedWord ) ? $self->getGuess( $LinkedWord ) : $LinkedWord->getMask();
-               }
+         if( $self->hasGuessed( $Word ) ) {
+            $VisibleWords{ $Word->getUid() } = $self->getGuess( $Word );
+            foreach my $LinkedWord ( $Frame->getLinkedWords( $Word ) ) {
+               $VisibleWords{ $LinkedWord->getUid() } = $self->hasGuessed( $LinkedWord ) ? $self->getGuess( $LinkedWord ) : $LinkedWord->getMask();
             }
          }
       }
-      my @VisibleLinks = map { [ $_->[ 0 ]->as_string(), $_->[ 1 ]->as_string() ] } 
-                         grep { exists $VisibleWords{ $_->[ 0 ] } || exists $VisibleWords{ $_->[ 1 ] } } 
+      my @VisibleLinks = map  { [ $_->[ 0 ]->as_string(), $_->[ 1 ]->as_string() ] } 
+                         grep { exists $VisibleWords{ $_->[ 0 ] } and exists $VisibleWords{ $_->[ 1 ] } } 
                          $Frame->getLinks();
       my %Coordinates = map { $_ => $Frame->getCoordinates( $Frame->getWordByUid( Data::GUID->from_string( $_ ) ) ) } keys %VisibleWords;
       return {

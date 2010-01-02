@@ -11,7 +11,7 @@ my $WordGraph = WordGraph->new();
 
 #-------------------------------------------------------------------------------
 before sub {
-   var User => $WordGraph->getUser();
+   var User => $WordGraph->getUser( '3B12CD94-F732-11DE-8FD8-C661A7517805' );
    set_cookie UserUid => vars->{User}->getUid()->as_string();
 };
 
@@ -53,12 +53,10 @@ get '/Frame/:Uid' => sub {
 
 #-------------------------------------------------------------------------------
 post '/Frame/:Uid/Guess' => sub {
-   content_type 'application/json';
    my $FrameUid = params->{Uid};
    if( my $Frame = $WordGraph->getFrame( $FrameUid ) ) {
-      my $Guess = cgi->param( 'Guess' );
-      return $Guess;
-      return to_json( vars->{User}->guessWordInFrame( Frame => $Frame, Guess => $Guess ) );
+      my $Guess = params->{Guess};
+      return vars->{User}->guessWordInFrame( Frame => $Frame, Guess => $Guess );
    }
    else {
       return;

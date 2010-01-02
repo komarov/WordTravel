@@ -7,81 +7,70 @@ function createFrame( Options ) {
    that.UID = Options.UID;
 
    var Paper = that.getResource( 'Paper' );
-
-   function getFrameData() {
-
-      var FrameData = {
-         'Links': [
-            [
-            '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0',
-         '8EC99946-E7EB-11DE-B3BD-C724A05985A0'
-            ],
-         [
-            '8EC99946-E7EB-11DE-B3BD-C724A05985A0',
-         '8ED02950-E7EB-11DE-B3BD-C724A05985A0'
-            ],
-         [
-            '8ED02950-E7EB-11DE-B3BD-C724A05985A0',
-         '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0'
-            ],
-         [
-            '8ED02950-E7EB-11DE-B3BD-C724A05985A0',
-         '8EDA547A-E7EB-11DE-B3BD-C724A05985A0'
-            ]
-            ],
-         'Words': {
-            '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0': 'aBc',
-            '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': 'secretskdlgksjdklgjhsdklgjdhslkdh',
-            '8ED02950-E7EB-11DE-B3BD-C724A05985A0': 'real',
-            '8EC99946-E7EB-11DE-B3BD-C724A05985A0': '123',
-            '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': '.......'
-         },
-         'Coordinates': {
-            '8EC0B16E-E7EB-11DE-B3BD-C724A05985A0': { X: 0, Y: 0 },
-            '8ED9AF20-E7EB-11DE-B3BD-C724A05985A0': { X: 0, Y: 10 },
-            '8ED02950-E7EB-11DE-B3BD-C724A05985A0': { X: 10, Y: 20 },
-            '8EC99946-E7EB-11DE-B3BD-C724A05985A0': { X: 20, Y: 30 },
-            '8EDA547A-E7EB-11DE-B3BD-C724A05985A0': { X: 30, Y: 40 }
-         }
-      };
-
-      return FrameData;
-   }
-
-   var FrameData = getFrameData();
-   var Links = FrameData.Links;
+   var LocalYUI = that.getResource( 'YUI' );
+   var LinkPaths = [];
    var Words = {};
 
-   var WordsData = FrameData.Words;
-   for( var WordUID in WordsData ) {
-      if( WordsData.hasOwnProperty( WordUID ) ) {
-         Words[ WordUID ] = createWord( { Text: WordsData[ WordUID ], Context: that } );
-         Words[ WordUID ].setCoordinates( FrameData.Coordinates[ WordUID ] );         
-         if( DEBUG ) console.log( Words[ WordUID ] );
-      }
-   }
-
    that.render = function() {
-
-      var CornerRound = 3;
-      for( var wordUID in Words ) {
-         if( Words.hasOwnProperty( wordUID ) ) {
-            if( DEBUG ) console.log(  Words[ wordUID ] );
-            Words[ wordUID ].drawWord( CornerRound );
+      var RequestConfig = {
+         method: 'GET',
+         on: {
+            success: function( transactionid, request ) {
+               purgeLinkPaths();
+               purgeWords();
+               render( LocalYUI.JSON.parse( request.responseText ) );
+            }
          }
+      };
+      LocalYUI.io( '/Frame/' + that.UID, RequestConfig );
+
+
+      function purgeLinkPaths() {
+         for( var Index in LinkPaths ) {
+            if( LinkPaths.hasOwnProperty( Index ) ) {
+               LinkPaths[ Index ].remove();
+            }
+         }
+         LinkPaths = [];
       }
 
-      for( var index in Links ) {
-         if( Links.hasOwnProperty( index ) ) {
-            var Link = Links[ index ];
 
-            var HotSpot_0 =  Words[ Link[ 0 ] ].getHotSpot();
-            var HotSpot_1 =  Words[ Link[ 1 ] ].getHotSpot();
+      function purgeWords() {
+         for( var WordUID in Words ) {
+            if( Words.hasOwnProperty( WordUID ) ) {
+               Words[ WordUID ].remove();
+            }
+         }
+         Words = {};
+      }
 
-            if( DEBUG ) console.log( 'hspots:', HotSpot_0, HotSpot_1, Link );
 
-            var Path = Paper.path( "M" + HotSpot_0.x + " " + HotSpot_0.y + "L" + HotSpot_1.x + " " + HotSpot_1.y ).attr( 'stroke', '#0f0' );
-            Path.toBack();
+      function render( FrameData ) {
+         var CornerRound = 3;
+         var WordsData = FrameData.Words;
+         var LinksData = FrameData.Links;
+         for( var WordUID in WordsData ) {
+            if( WordsData.hasOwnProperty( WordUID ) ) {
+               Words[ WordUID ] = createWord( { Text: WordsData[ WordUID ], Context: that } );
+               Words[ WordUID ].setCoordinates( FrameData.Coordinates[ WordUID ] );   
+               Words[ WordUID ].draw( CornerRound );      
+               if( DEBUG ) console.log( Words[ WordUID ] );
+            }
+         }
+
+         for( var index in LinksData ) {
+            if( LinksData.hasOwnProperty( index ) ) {
+               var Link = LinksData[ index ];
+
+               if( !DEBUG ) console.log( Link );
+               var HotSpot_0 =  Words[ Link[ 0 ] ].getHotSpot();
+               var HotSpot_1 =  Words[ Link[ 1 ] ].getHotSpot();
+
+
+               var LinkPath = Paper.path( "M" + HotSpot_0.x + " " + HotSpot_0.y + "L" + HotSpot_1.x + " " + HotSpot_1.y ).attr( 'stroke', '#0f0' );
+               LinkPath.toBack();
+               LinkPaths.push( LinkPath );
+            }
          }
       }
    };

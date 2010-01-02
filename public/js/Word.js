@@ -9,29 +9,29 @@ function createWord( Options ) {
    that.Y = 0;
 
 //---private properties---
-   var Raphael_rect;
-   var Raphael_text;
+   var Container;
+   var Content;
 
 //----methods----
-   that.drawWord = function( CornerRound ) {
+   that.draw = function( CornerRound ) {
       
       var Paper = that.getResource( 'Paper' );
       if( Paper ) {
          var Coordinates = Paper.convertCoordinates( that );
          if( DEBUG ) console.log(  Coordinates.X, Coordinates.Y, that.Text  ) ;
 
-         Raphael_text = Paper.text( Coordinates.X, Coordinates.Y, that.Text ).attr( { fill: "#fff", font: "18px \"Dejavu Sans\"" } );
+         Content = Paper.text( Coordinates.X, Coordinates.Y, that.Text ).attr( { fill: "#fff", font: "18px \"Dejavu Sans\"" } );
 
-         var Raphael_textBB = Raphael_text.getBBox();
-         Raphael_rect = Paper.rect( Raphael_textBB.x , Raphael_textBB.y, Raphael_textBB.width + 4 * CornerRound, Raphael_textBB.height + 2 * CornerRound, CornerRound ).attr( { fill: "#000", stroke: "#0f0" } );
-         Raphael_rect.toBack();
+         var ContentBB = Content.getBBox();
+         Container = Paper.rect( ContentBB.x , ContentBB.y, ContentBB.width + 4 * CornerRound, ContentBB.height + 2 * CornerRound, CornerRound ).attr( { fill: "#000", stroke: "#0f0" } );
+         Container.toBack();
       }
    };
 
    that.getHotSpot = function() {
 
-      if( DEBUG ) console.log( 'from Word.hotSpot:', Raphael_rect );
-      return Raphael_rect.getHotSpot();
+      if( DEBUG ) console.log( 'from Word.hotSpot:', Container );
+      return Container.getHotSpot();
    }; 
 
    that.setCoordinates = function( Coordinates ) {
@@ -41,6 +41,11 @@ function createWord( Options ) {
       that.X = Coordinates.X;
       that.Y = Coordinates.Y;
       if( DEBUG ) console.log( that.X, that.Y );    
+   };
+
+   that.remove = function() {
+      Container.remove();
+      Content.remove();
    };
 
    return that;

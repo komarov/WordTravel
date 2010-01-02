@@ -1,4 +1,5 @@
 use MooseX::Declare;
+use WordGraph::Word;
 
 
 class WordGraph::Frame extends WordGraph::Object {

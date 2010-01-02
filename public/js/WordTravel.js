@@ -4,6 +4,7 @@ function createWordTravel( Options ) {
 
    var that = createObject( Options );
 
+   that.YUI = Options.YUI;
    that.Paper = Options.Paper;
    that.Paper.convertCoordinates = function( Coordinates ) {
       var Width = that.Paper.width;
@@ -18,20 +19,22 @@ function createWordTravel( Options ) {
 //----methods----
 
    that.run = function() {
-      
-      that.Frame = createFrame( { UID: 'dfhgkljhlkj', Context: that } );
-      if( DEBUG ) console.log( that );
-      that.renderCurrentFrame();
+      that.onGuessWordSuccess = that.renderCurrentFrame;
+      that.onGuessWordFail = function() { alert( 'try again' ) };
+
+      that.getFrameList( function( FrameList ) {
+         var ChosenFrameUid;
+         for( var FrameUid in FrameList ) {
+            if( FrameList.hasOwnProperty( FrameUid ) ) {
+               ChosenFrameUid = FrameUid;
+               break;
+            }
+         }
+         that.setFrame( createFrame( { UID: ChosenFrameUid, Context: that } ) );
+         that.renderCurrentFrame();
+      } );  
    };
 
-   that.login = function() {
-   };
-
-
-   that.setUser = function( User ) {
-
-      that.User = User;
-   };
 
    that.setFrame = function( Frame ) {
 
@@ -43,20 +46,37 @@ function createWordTravel( Options ) {
       that.Frame.render();
    };
 
-   that.FrameByUID = function( FrameUID ) {
-
-      var FrameData = getFrameData( FrameUID );
-      if( DEBUG ) console.log( FrameData );
-
-      for( var wordUID in FrameData.Words ) {
-         if( FrameData.Words.hasOwnProperty( wordUID ) ) {
-            that.Words[ wordUID ] = new Word( FrameData.Words[ wordUID ] );
-            if( DEBUG ) console.log( that.Words[ wordUID ] );
+   that.getFrameList = function( Callback ) {
+      var RequestConfig = {
+         method: 'GET',
+         on: {
+            success: function( transactionid, request ) {
+               Callback && Callback( that.YUI.JSON.parse( request.responseText ) );
+            }
          }
-      }
-
-      that.Links = Frame.Links;
+      };
+      that.YUI.io( '/Frame/List', RequestConfig );
    };
+
+   that.guessWordInFrame = function( Guess ) {
+      var RequestConfig = {
+         method: 'POST',
+         on: {
+            success: function( transactionid, request ) {
+               var GuessResult = request.responseText;
+               if( GuessResult ) {
+                  that.onGuessWordSuccess && that.onGuessWordSuccess();
+               }
+               else {
+                  that.onGuessWordFail && that.onGuessWordFail();
+               }
+            }
+         },
+         data: 'Guess=' + Guess 
+      };
+      var FrameUID = that.Frame.UID;
+      that.YUI.io( '/Frame/' + FrameUID + '/Guess', RequestConfig );
+   }; 
 
    return that;
 }
