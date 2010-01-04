@@ -67,7 +67,7 @@ function createFrame( Options ) {
                var HotSpot_1 =  Words[ Link[ 1 ] ].getHotSpot();
 
 
-               var LinkPath = Paper.path( "M" + HotSpot_0.x + " " + HotSpot_0.y + "L" + HotSpot_1.x + " " + HotSpot_1.y ).attr( 'stroke', '#0f0' );
+               var LinkPath = Paper.path( "M" + HotSpot_0.x + " " + HotSpot_0.y + "L" + HotSpot_1.x + " " + HotSpot_1.y ).attr( 'stroke', '#fff' );
                LinkPath.toBack();
                LinkPaths.push( LinkPath );
             }
