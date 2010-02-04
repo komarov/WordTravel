@@ -11,7 +11,7 @@ my $WordGraph = WordGraph->new();
 
 #-------------------------------------------------------------------------------
 before sub {
-   var User => $WordGraph->getUser( '3B12CD94-F732-11DE-8FD8-C661A7517805' );
+   var User => $WordGraph->getUser( cookies->{UserUid}->{value} );
    set_cookie UserUid => vars->{User}->getUid()->as_string();
 };
 
