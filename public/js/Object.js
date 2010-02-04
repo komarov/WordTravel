@@ -10,7 +10,8 @@ function createObject( Options ) {
    };
 
    that.getResource = function( ResourceName ) {
-      return that[ ResourceName ] || that.getContext().getResource( ResourceName );
+      var Context = that.getContext();
+      return that[ ResourceName ] || Context && Context.getResource( ResourceName );
    };
 
    return that;
