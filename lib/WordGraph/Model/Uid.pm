@@ -1,17 +1,13 @@
 use MooseX::Declare;
-use WordGraph::Types;
 
 
-role WordGraph::Uid {
-   use Data::GUID;
-
-
-   has Uid => ( is => 'ro', isa => 'Data::GUID', coerce => 1, lazy => 1, builder => '_buildUid' );
+role WordGraph::Model::Uid {
+   has Uid => ( is => 'ro', isa => 'Str',  lazy => 1, builder => '_buildUid' );
 
 
    #-------------------------------------------------------------------------------
    method _buildUid {
-      return Data::GUID->new();
+      return rand();
    }
 
 
@@ -22,7 +18,7 @@ role WordGraph::Uid {
 
 
    #-------------------------------------------------------------------------------
-   method isEqual( WordGraph::Uid $Object ) {
-      return $self->getUid() == $Object->getUid();
+   method isEqual( WordGraph::Model::Uid $Object ) {
+      return $self->getUid() eq $Object->getUid();
    }
 }

@@ -1,7 +1,7 @@
 use MooseX::Declare;
 
 
-class WordGraph::Word with WordGraph::Uid {
+class WordGraph::Model::Object::Word extends WordGraph::Model::Object {
    use Digest::MD5 qw( md5_hex );
    use Encode qw( encode_utf8 );
 
@@ -11,22 +11,15 @@ class WordGraph::Word with WordGraph::Uid {
 
 
    #-------------------------------------------------------------------------------
-   sub BUILDARGS {
-      my $class = shift;
-
-      my %Parameters = @_;
+   method BUILDARGS( ClassName $Class: %Parameters ) {
+      my $Args = $Class->SUPER::BUILDARGS( %Parameters );
       my $Word = $Parameters{Word};
       my $Uid  = $Parameters{Uid};
       if( $Word ) {
-         my $Args = { Hash => _hash( $Word ), Mask => _mask( $Word ) };
-         if( $Uid ) {
-            $Args->{Uid} = $Uid;
-         }
-         return $Args;
+         $Args->{Hash} = _hash( $Word );
+         $Args->{Mask} = _mask( $Word );
       }
-      else {
-         return $class->SUPER::BUILDARGS( @_ );
-      }
+      return $Args;
    }
 
 

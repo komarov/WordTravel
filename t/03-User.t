@@ -1,21 +1,24 @@
 use strict;
 use warnings;
 use Test::More qw( no_plan );
+use KiokuDB;
+use KiokuDB::Backend::Files;
 
 use lib 'lib';
-use WordGraph::Types;
-use WordGraph::User;
-use WordGraph::Word;
-use WordGraph::Frame;
+use WordGraph::Model;
 
-my $User = WordGraph::User->new();
-ok(
-   $User->isa( 'WordGraph::User' ),
-   'user created successfully'
+my $Storage = KiokuDB->new(
+   backend => KiokuDB::Backend::Files->new(
+      dir        => 't/data',
+      serializer => 'json',
+   ),
 );
+my $Scope = $Storage->new_scope;
+my $Model = WordGraph::Model->new( Storage => $Storage, ObjectClasses => [ qw( User Frame Word ) ] );
 
-my $Word = WordGraph::Word->new( Word => 'abc' );
-my $AnotherWord = WordGraph::Word->new( Word => '123' );
+my $User = $Model->createUser();
+my $Word = $Model->createWord( Word => 'abc' );
+my $AnotherWord = $Model->createWord( Word => '123' );
 ok(
    $User->guessWord( Word => $Word, Guess => 'aBc' ) && $User->getGuess( $Word ) eq 'aBc',
    'guessed and stored exact guess'
@@ -25,7 +28,7 @@ ok(
    'guessed'
 );
 
-my $SameUser = WordGraph::User->new( Uid => $User->getUid() );
+my $SameUser = $Model->getUser( $User->getUid() );
 ok(
    $SameUser->isEqual( $User ),
    'created same user'
@@ -35,7 +38,7 @@ ok(
    'all instances of the same user consider this word as guessed'
 );
 
-my $NewWord = WordGraph::Word->new( Word => 'real' );
+my $NewWord = $Model->createWord( Word => 'real' );
 ok(
    !$User->guessWord( Word => $NewWord, Guess => 'unreal' ) && !$User->hasGuessed( $NewWord ),
    'wrong guess is blocked'
@@ -49,10 +52,10 @@ ok(
    'second guess has no effect'
 );
 
-my $SecretWord = WordGraph::Word->new( Word => 'secret' );
-my $SecretWord2 = WordGraph::Word->new( Word => 'secret1' );
+my $SecretWord = $Model->createWord( Word => 'secret' );
+my $SecretWord2 = $Model->createWord( Word => 'secret1' );
 my @Words = ( $Word, $AnotherWord, $NewWord, $SecretWord, $SecretWord2 );
-my $Frame = WordGraph::Frame->new( Words => \@Words );
+my $Frame = $Model->createFrame( Words => \@Words );
 $Frame->linkWords( $Word, $AnotherWord );
 $Frame->linkWords( $AnotherWord, $NewWord );
 $Frame->linkWords( $NewWord, $SecretWord );
@@ -69,14 +72,10 @@ ok(
    'second guess has no effect'
 );
 
-use Data::Dumper;
-print Dumper $User->renderFrame( $Frame );
-
 ok(
    $User->getFrameList(),
    'dummy getFrameList works'
 );
 
-
-$User->_delete();
-$Frame->_delete();
+$User->delete();
+$Frame->delete();

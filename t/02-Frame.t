@@ -1,18 +1,28 @@
 use strict;
 use warnings;
 use Test::More qw( no_plan );
+use KiokuDB;
+use KiokuDB::Backend::Files;
 
 use lib 'lib';
 use WordGraph::Types;
-use WordGraph::Frame;
-use WordGraph::Word;
+use WordGraph::Model;
 
-my $Word1 = WordGraph::Word->new( Word => '123' );
-my $Word2 = WordGraph::Word->new( Word => 'abc' );
+my $Storage = KiokuDB->new(
+   backend => KiokuDB::Backend::Files->new(
+      dir        => 't/data',
+      serializer => 'json',
+   ),
+);
+my $Scope = $Storage->new_scope;
+my $Model = WordGraph::Model->new( Storage => $Storage, ObjectClasses => [ qw( Word Frame ) ] );
+
+my $Word1 = $Model->createWord( Word => '123' );
+my $Word2 = $Model->createWord( Word => 'abc' );
 my $Links = [ [ $Word1->getUid(), $Word2->getUid() ] ];
-my $Frame = WordGraph::Frame->new( Words => [ $Word1, $Word2 ], Links => $Links );
+my $Frame = $Model->createFrame( Words => [ $Word1, $Word2 ], Links => $Links );
 ok(
-   $Frame->isa( 'WordGraph::Frame' ),
+   $Frame->isa( 'WordGraph::Model::Object::Frame' ),
    'frame was created successfully'
 );
 
@@ -21,16 +31,14 @@ ok(
    'getWordByUid works'
 );
 
-$Frame->_save();
-
-my $SameFrame = WordGraph::Frame->new( Uid => $Frame->getUid() );
+my $SameFrame = $Model->getFrame( $Frame->getUid() );
 my ( $Linked ) = $SameFrame->getLinkedWords( $Word1 );
 ok(
    $Linked->isEqual( $Word2 ),
    'getLinkedWords works'
 );
 
-my $Word3 = WordGraph::Word->new( Word => 'zxcvb' );
+my $Word3 = $Model->createWord( Word => 'zxcvb' );
 
 ok(
    $Frame->addWord( $Word3 ),
@@ -49,6 +57,4 @@ ok(
    $Frame->setCoordinates( $Word1, { X => 1, Y => 2 } ),
    'setCoordinates works'
 );
-use Data::Dumper;
-print Dumper $Frame->getCoordinates( $Word1 );
-$SameFrame->_delete();
+$Frame->delete();

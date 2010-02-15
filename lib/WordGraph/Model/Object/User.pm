@@ -1,38 +1,20 @@
 use MooseX::Declare;
 
 
-class WordGraph::User extends WordGraph::Object {
+class WordGraph::Model::Object::User extends WordGraph::Model::Object {
    use List::MoreUtils qw( none any );
    use List::Util qw( first );
-   use Data::GUID;
    use IO::All -utf8;
    use JSON;
 
 
-   has GuessedWords => ( is => 'rw', isa => 'ArrayRef[HashRef[Data::GUID|Str]]', default => sub{ [] } ); 
-   
-
-   #-------------------------------------------------------------------------------
-   method _composeRawData {
-      return { GuessedWords => [ map { { Uid => $_->{Uid}->as_string(), Word => $_->{Word} } } @{ $self->GuessedWords } ] };
-   }
+   has GuessedWords => ( is => 'rw', isa => 'ArrayRef[HashRef[Str]]', default => sub{ [] } ); 
 
 
    #-------------------------------------------------------------------------------
-   method _decomposeRawData( HashRef $RawData! ) {
-      if( my $GuessedWords = $RawData->{GuessedWords} ) {
-         $self->GuessedWords( [ map { { Uid => Data::GUID->from_string( $_->{Uid} ), Word => $_->{Word} } } @$GuessedWords ] );
-         return 1;
-      }
-      return;
-   }
-
-
-   #-------------------------------------------------------------------------------
-   method _storeGuessedWord( WordGraph::Word :$Word, Str :$Guess ) {
-      if( none { $Word->getUid() == $_->{Uid} } @{ $self->GuessedWords } or !scalar @{ $self->GuessedWords } ) {
+   method _storeGuessedWord( WordGraph::Model::Object::Word :$Word, Str :$Guess ) {
+      if( none { $Word->getUid() eq $_->{Uid} } @{ $self->GuessedWords } or !scalar @{ $self->GuessedWords } ) {
          push @{ $self->GuessedWords }, { Uid => $Word->getUid(), Word => $Guess };
-         $self->_save();
          return 1;
       }
       return;
@@ -40,7 +22,7 @@ class WordGraph::User extends WordGraph::Object {
 
 
    #-------------------------------------------------------------------------------
-   method guessWord( WordGraph::Word :$Word!, Str :$Guess! ) {
+   method guessWord( WordGraph::Model::Object::Word :$Word!, Str :$Guess! ) {
       if( !$self->hasGuessed( $Word ) && $Word->verify( $Guess ) ) {
          return $self->_storeGuessedWord( Word => $Word, Guess => $Guess );
       }
@@ -49,14 +31,14 @@ class WordGraph::User extends WordGraph::Object {
 
 
    #-------------------------------------------------------------------------------
-   method hasGuessed( WordGraph::Word $Word! ) {
-      return any { $Word->getUid() == $_->{Uid} } @{ $self->GuessedWords };
+   method hasGuessed( WordGraph::Model::Object::Word $Word! ) {
+      return any { $Word->getUid() eq $_->{Uid} } @{ $self->GuessedWords };
    }
 
 
    #-------------------------------------------------------------------------------
-   method getGuess( WordGraph::Word $Word! ) {
-      if( my $StoredGuess = first { $_->{Uid} == $Word->getUid() } @{ $self->GuessedWords } ) {
+   method getGuess( WordGraph::Model::Object::Word $Word! ) {
+      if( my $StoredGuess = first { $_->{Uid} eq $Word->getUid() } @{ $self->GuessedWords } ) {
          return $StoredGuess->{Word};
       }
       return;
@@ -64,7 +46,7 @@ class WordGraph::User extends WordGraph::Object {
 
 
    #-------------------------------------------------------------------------------
-   method renderFrame( WordGraph::Frame $Frame! ) {
+   method renderFrame( WordGraph::Model::Object::Frame $Frame! ) {
       my %VisibleWords = ();
       foreach my $Word ( $Frame->getWords() ) {
          if( $self->hasGuessed( $Word ) ) {
@@ -74,10 +56,9 @@ class WordGraph::User extends WordGraph::Object {
             }
          }
       }
-      my @VisibleLinks = map  { [ $_->[ 0 ]->as_string(), $_->[ 1 ]->as_string() ] } 
-                         grep { exists $VisibleWords{ $_->[ 0 ] } and exists $VisibleWords{ $_->[ 1 ] } } 
+      my @VisibleLinks = grep { exists $VisibleWords{ $_->[ 0 ] } and exists $VisibleWords{ $_->[ 1 ] } } 
                          $Frame->getLinks();
-      my %Coordinates = map { $_ => $Frame->getCoordinates( $Frame->getWordByUid( Data::GUID->from_string( $_ ) ) ) } keys %VisibleWords;
+      my %Coordinates = map { $_ => $Frame->getCoordinates( $Frame->getWordByUid( $_ ) ) } keys %VisibleWords;
       return {
          Words       => \%VisibleWords,
          Links       => \@VisibleLinks,
@@ -87,7 +68,7 @@ class WordGraph::User extends WordGraph::Object {
 
 
    #-------------------------------------------------------------------------------
-   method guessWordInFrame( WordGraph::Frame :$Frame!, Str :$Guess! ) {
+   method guessWordInFrame( WordGraph::Model::Object::Frame :$Frame!, Str :$Guess! ) {
       return any { $self->guessWord( Word => $_, Guess => $Guess ) } $Frame->getWords();
    }
 
