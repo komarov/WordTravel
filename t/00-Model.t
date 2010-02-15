@@ -48,7 +48,6 @@ ok(
    $Compare->is_LequivalentR(),
    'Our trait WordGraph::Model::NotStorable draws KiokuDB::DoNotSerialize'
 );
-$Object->delete();
 
 
 class WordGraph::Model::Object::Test extends WordGraph::Model::Object {
